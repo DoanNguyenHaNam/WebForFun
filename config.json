@@ -3,8 +3,8 @@
   "popup": {
     "enabled": true,
     "title": "Ủng hộ shop giúp mình nha",
-    "message": "Bấm đóng để mở link TikTok Shop affiliate. Nếu chưa muốn xem thì chọn đóng trong 20 phút.",
+    "message": "Bấm Đóng để mở link TikTok Shop affiliate. Nếu chưa muốn xem thì chọn Đóng trong 20 phút.",
     "tiktokshop_link": "https://www.tiktok.com/",
-    "mode": "tiktokshop"
+    "banner_image": "https://your-banner-image-link.jpg"
   }
 }
