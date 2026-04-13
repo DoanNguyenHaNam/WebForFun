@@ -1,15 +1,26 @@
 [
   {
     "key": "mod-001",
-    "tiêu đề": "Mod 1 - Hướng dẫn cài đặt",
+    "category": "mod-lẻ",
+    "tiêu đề": "Mod lẻ Nakroth skin mới",
     "link video youtube": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    "link tải file": "https://example.com/file1.zip"
+    "link tải file": "https://example.com/file1.zip",
+    "thumbnail": "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
   },
   {
     "key": "mod-002",
-    "tiêu đề": "Mod 2 - Video demo",
+    "category": "mod-pack",
+    "tiêu đề": "Pack mod full hiệu ứng",
     "link video youtube": "https://www.youtube.com/watch?v=ysz5S6PUM-U",
     "link tải file": "https://example.com/file2.zip",
     "thumbnail": "https://img.youtube.com/vi/ysz5S6PUM-U/hqdefault.jpg"
+  },
+  {
+    "key": "mod-003",
+    "category": "mod-reup",
+    "tiêu đề": "Reup mod cũ bản ổn định",
+    "link video youtube": "https://github.com/ten-repo/video/blob/main/demo.mp4",
+    "link tải file": "https://example.com/file3.zip",
+    "thumbnail": "https://via.placeholder.com/640x360?text=Preview"
   }
 ]
