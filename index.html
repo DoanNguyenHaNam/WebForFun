@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
+      --scale: 0.9; /* scale toàn web nhỏ lại */
       --sidebar-w: 238px;
       --sidebar-collapsed: 78px;
       --bg-dark: #090212;
@@ -28,6 +29,9 @@
     * { box-sizing: border-box; }
 
     html, body {
+      transform: scale(var(--scale));
+      transform-origin: top left;
+      width: calc(100% / var(--scale));
       margin: 0;
       min-height: 100%;
       font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;
@@ -701,6 +705,7 @@
     }
 
     @media (max-width: 720px) {
+      :root { --scale: 1; }
       .main { padding: 12px 12px 26px; }
       .hero { padding: 16px; }
       .hero h2 { font-size: 24px; }
