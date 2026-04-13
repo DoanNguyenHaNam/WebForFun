@@ -1,14 +1,595 @@
+html
 <!DOCTYPE html>
-            <div class="content">
-              <h3 class="title">${escapeHtml(item.title)}</h3>
-              <p class="desc">Bấm để mở trang tải mod riêng cho mục này.</p>
-              <div class="row">
-                <span class="pill">Key: ${escapeHtml(item.key)}</span>
-                <span class="pill">Có link tải</span>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PminMod | Kho mod</title>
+  <style>
+    :root {
+      --bg1: #020617;
+      --bg2: #071427;
+      --panel: rgba(10, 20, 42, 0.78);
+      --panel-2: rgba(13, 25, 50, 0.92);
+      --card: rgba(13, 24, 48, 0.95);
+      --card-hover: rgba(18, 34, 68, 0.98);
+      --text: #eef4ff;
+      --muted: #9db1d6;
+      --accent: #7dd3fc;
+      --accent2: #93c5fd;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(125,211,252,0.10), transparent 25%),
+        radial-gradient(circle at top right, rgba(147,197,253,0.10), transparent 20%),
+        linear-gradient(180deg, var(--bg1) 0%, #03101f 45%, var(--bg2) 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(rgba(2,6,23,0.72), rgba(2,6,23,0.86)),
+        url("assets/bg.jpg") center/cover no-repeat;
+      opacity: 0.2;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, rgba(255,255,255,.45), transparent 85%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(1240px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 24px 0 48px;
+    }
+
+    .hero {
+      padding: 26px;
+      border-radius: 28px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      color: #02111c;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.1;
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .hero-title {
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.03;
+      letter-spacing: -0.04em;
+      margin: 14px 0 8px;
+    }
+
+    .hero-desc {
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 0;
+      max-width: 780px;
+    }
+
+    .menu {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .menu-btn {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .menu-btn:hover,
+    .menu-btn.active {
+      background: linear-gradient(135deg, rgba(125,211,252,0.16), rgba(147,197,253,0.12));
+      border-color: rgba(125,211,252,0.35);
+      transform: translateY(-1px);
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 200px;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .input,
+    .select {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(2, 8, 20, 0.75);
+      color: var(--text);
+      outline: none;
+      font-size: 14px;
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 16px 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      display: block;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--card) 0%, rgba(8, 17, 36, 0.98) 100%);
+      box-shadow: var(--shadow);
+      transition: .18s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(125,211,252,0.35);
+      background: linear-gradient(180deg, var(--card-hover) 0%, rgba(10, 20, 42, 0.98) 100%);
+    }
+
+    .media {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .media img,
+    .media iframe,
+    .media video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border: 0;
+      object-fit: cover;
+    }
+
+    .badge,
+    .cat {
+      position: absolute;
+      top: 12px;
+      z-index: 2;
+      font-size: 12px;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 7px 10px;
+    }
+
+    .badge {
+      left: 12px;
+      background: rgba(2,6,23,.58);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+
+    .cat {
+      right: 12px;
+      color: #02111c;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+    }
+
+    .play {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 56px;
+      text-shadow: 0 6px 18px rgba(0,0,0,0.45);
+      pointer-events: none;
+    }
+
+    .content {
+      padding: 16px;
+    }
+
+    .title {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+
+    .desc {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .box {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(7, 18, 40, 0.82);
+      color: var(--muted);
+    }
+
+    .hidden { display: none !important; }
+
+    .modal-wrap {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(2,6,23,.72);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+    }
+
+    .modal-wrap.show { display: flex; }
+
+    .modal {
+      width: min(520px, 100%);
+      border-radius: 26px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(13,25,50,0.98), rgba(8,18,38,0.98));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .modal-body {
+      padding: 22px;
+    }
+
+    .modal-body h3 {
+      margin: 0 0 10px;
+      font-size: 28px;
+    }
+
+    .modal-body p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      padding: 13px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      color: #02111c;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+    }
+
+    @media (max-width: 860px) {
+      .toolbar { grid-template-columns: 1fr; }
+      .modal-actions { grid-template-columns: 1fr; }
+      .hero { padding: 18px; }
+      .container { width: min(100% - 18px, 1240px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div class="brand">
+        <div class="logo">PM</div>
+        <div class="brand-text">
+          <h1>PminMod</h1>
+          <p>Kho video mod, mod pack, mod reup</p>
+        </div>
+      </div>
+
+      <h2 class="hero-title">Kho video & tải file mod</h2>
+      <p class="hero-desc">
+        Bấm vào từng khung để sang trang tải file riêng. Nội dung menu nằm trong <b>config.json</b>,
+        dữ liệu mod nằm trong <b>data.json</b>.
+      </p>
+
+      <nav class="menu" id="menu"></nav>
+
+      <div class="toolbar">
+        <input id="searchInput" class="input" type="text" placeholder="Tìm theo tiêu đề hoặc key..." />
+        <select id="viewMode" class="select">
+          <option value="smart">Chế độ thông minh</option>
+          <option value="thumb">Chỉ thumbnail</option>
+          <option value="embed">Nhúng video</option>
+        </select>
+      </div>
+    </section>
+
+    <div class="meta">
+      <div id="countText">Đang tải dữ liệu...</div>
+      <div id="categoryText">Đang lọc: tất cả</div>
+    </div>
+
+    <div id="loadingBox" class="box">Đang tải danh sách...</div>
+    <div id="errorBox" class="box hidden"></div>
+    <div id="emptyBox" class="box hidden">Không có mục nào phù hợp.</div>
+    <div id="grid" class="grid hidden"></div>
+  </div>
+
+  <div id="noticeModal" class="modal-wrap">
+    <div class="modal">
+      <div class="modal-body">
+        <h3 id="noticeTitle">Thông báo</h3>
+        <p id="noticeMessage"></p>
+        <div class="modal-actions">
+          <button id="close20Btn" class="btn">Đóng trong 20 phút</button>
+          <button id="closeBtn" class="btn primary">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DATA_FILE = 'data.json';
+    const CONFIG_FILE = 'config.json';
+    const HIDE_MINUTES = 20;
+
+    let allItems = [];
+    let currentCategory = 'all';
+    let config = { categories: [], popup: {} };
+
+    const grid = document.getElementById('grid');
+    const loadingBox = document.getElementById('loadingBox');
+    const errorBox = document.getElementById('errorBox');
+    const emptyBox = document.getElementById('emptyBox');
+    const countText = document.getElementById('countText');
+    const categoryText = document.getElementById('categoryText');
+    const searchInput = document.getElementById('searchInput');
+    const viewMode = document.getElementById('viewMode');
+    const menu = document.getElementById('menu');
+    const noticeModal = document.getElementById('noticeModal');
+    const noticeTitle = document.getElementById('noticeTitle');
+    const noticeMessage = document.getElementById('noticeMessage');
+    const closeBtn = document.getElementById('closeBtn');
+    const close20Btn = document.getElementById('close20Btn');
+
+    function escapeHtml(str = '') {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function getYoutubeId(url = '') {
+      const patterns = [
+        /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+        /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+        /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+        /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
+      ];
+
+      for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match) return match[1];
+      }
+
+      try {
+        const parsed = new URL(url);
+        return parsed.searchParams.get('v');
+      } catch {
+        return null;
+      }
+    }
+
+    function normalizeGithubVideo(url = '') {
+      if (!url.includes('github.com') || !url.includes('/blob/')) return url;
+      return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+    }
+
+    function isVideoFile(url = '') {
+      return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
+    }
+
+    function shouldUseThumbnail() {
+      const mode = viewMode.value;
+      if (mode === 'thumb') return true;
+      if (mode === 'embed') return false;
+
+      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (!conn) return false;
+      return conn.saveData || ['slow-2g', '2g', '3g'].includes(conn.effectiveType);
+    }
+
+    function normalizeItem(item) {
+      return {
+        key: item.key || '',
+        title: item['tiêu đề'] || item.title || 'Chưa có tiêu đề',
+        category: item.category || 'mod-lẻ',
+        video: item['link video youtube'] || item.video || '',
+        download: item['link tải file'] || item.download || '#',
+        thumbnail: item.thumbnail || ''
+      };
+    }
+
+    function renderMedia(item) {
+      const useThumb = shouldUseThumbnail();
+      const ytId = getYoutubeId(item.video);
+      const videoUrl = normalizeGithubVideo(item.video || '');
+
+      if (ytId) {
+        if (useThumb) {
+          return `
+            <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="${escapeHtml(item.title)}" loading="lazy">
+            <div class="play">▶</div>
+          `;
+        }
+
+        return `
+          <iframe
+            src="https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&rel=0&playsinline=1"
+            title="${escapeHtml(item.title)}"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen>
+          </iframe>
+        `;
+      }
+
+      if (isVideoFile(videoUrl)) {
+        return `
+          <video controls preload="metadata" muted playsinline>
+            <source src="${escapeHtml(videoUrl)}">
+          </video>
+        `;
+      }
+
+      if (item.thumbnail) {
+        return `<img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.title)}" loading="lazy">`;
+      }
+
+      return `<div style="width:100%;height:100%;display:grid;place-items:center;color:#9db1d6;">Không có preview</div>`;
+    }
+
+    function buildMenu() {
+      const categories = ['all', ...(config.categories || ['mod-lẻ', 'mod-pack', 'mod-reup'])];
+      menu.innerHTML = categories.map(cat => {
+        const label = cat === 'all' ? 'Trang chủ' : cat;
+        const active = cat === currentCategory ? 'active' : '';
+        return `<button class="menu-btn ${active}" data-cat="${escapeHtml(cat)}">${escapeHtml(label)}</button>`;
+      }).join('');
+
+      menu.querySelectorAll('.menu-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentCategory = btn.dataset.cat;
+          buildMenu();
+          applyFilter();
+        });
+      });
+    }
+
+    function applyFilter() {
+      const keyword = searchInput.value.trim().toLowerCase();
+      const filtered = allItems.filter(item => {
+        const okCategory = currentCategory === 'all' || item.category === currentCategory;
+        const okSearch = item.title.toLowerCase().includes(keyword) || item.key.toLowerCase().includes(keyword);
+        return okCategory && okSearch;
+      });
+
+      loadingBox.classList.add('hidden');
+      errorBox.classList.add('hidden');
+
+      if (!filtered.length) {
+        grid.classList.add('hidden');
+        emptyBox.classList.remove('hidden');
+      } else {
+        emptyBox.classList.add('hidden');
+        grid.classList.remove('hidden');
+        grid.innerHTML = filtered.map(item => {
+          const badge = getYoutubeId(item.video) ? 'YouTube' : 'Preview';
+          return `
+            <a class="card" href="download.html?api=${encodeURIComponent(item.key)}">
+              <div class="media">
+                <div class="badge">${escapeHtml(badge)}</div>
+                <div class="cat">${escapeHtml(item.category)}</div>
+                ${renderMedia(item)}
               </div>
-            </div>
-          </a>
-        `).join('');
+              <div class="content">
+                <h3 class="title">${escapeHtml(item.title)}</h3>
+                <p class="desc">Bấm để mở trang tải mod riêng cho mục này.</p>
+                <div class="row">
+                  <span class="pill">Key: ${escapeHtml(item.key)}</span>
+                  <span class="pill">Có link tải</span>
+                </div>
+              </div>
+            </a>
+          `;
+        }).join('');
       }
 
       countText.textContent = `${filtered.length} mục`;
@@ -22,16 +603,17 @@
     }
 
     function openNotice() {
-      if (!config?.popup?.enabled) return;
+      if (!config.popup || !config.popup.enabled) return;
       if (!shouldShowNotice()) return;
+
       noticeTitle.textContent = config.popup.title || 'Thông báo';
-      noticeMessage.innerHTML = escapeHtml(config.popup.message || '');
+      noticeMessage.textContent = config.popup.message || '';
       noticeModal.classList.add('show');
     }
 
     closeBtn.addEventListener('click', () => {
       noticeModal.classList.remove('show');
-      if (config?.popup?.tiktokshop_link) {
+      if (config.popup && config.popup.tiktokshop_link) {
         window.open(config.popup.tiktokshop_link, '_blank', 'noopener');
       }
     });
