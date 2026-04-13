@@ -1,629 +1,76 @@
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kho Video & Tải File Mod</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --card: #1e293b;
-      --card-hover: #334155;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-2: #22c55e;
-      --danger: #fb7185;
-      --border: rgba(255,255,255,0.08);
-      --shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, Arial, Helvetica, sans-serif;
-      background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    a { color: inherit; text-decoration: none; }
-
-    .container {
-      width: min(1200px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 24px 0 48px;
-    }
-
-    .hero {
-      padding: 24px;
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      background: rgba(15, 23, 42, 0.8);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      margin-bottom: 24px;
-    }
-
-    .hero h1 {
-      margin: 0 0 10px;
-      font-size: clamp(28px, 4vw, 42px);
-      line-height: 1.1;
-    }
-
-    .hero p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.6;
-    }
-
-    .toolbar {
-      display: grid;
-      grid-template-columns: 1fr 180px;
-      gap: 12px;
-      margin: 18px 0 0;
-    }
-
-    .input, .select {
-      width: 100%;
-      border: 1px solid var(--border);
-      background: #0b1220;
-      color: var(--text);
-      border-radius: 14px;
-      padding: 12px 14px;
-      outline: none;
-      font-size: 14px;
-    }
-
-    .meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin: 18px 0 14px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 18px;
-    }
-
-    .card {
-      display: block;
-      background: rgba(30, 41, 59, 0.88);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: transform .18s ease, background .18s ease, border-color .18s ease;
-      cursor: pointer;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      background: rgba(51, 65, 85, 0.95);
-      border-color: rgba(56, 189, 248, 0.45);
-    }
-
-    .media {
-      position: relative;
-      aspect-ratio: 16 / 9;
-      background: #000;
-      overflow: hidden;
-    }
-
-    .media iframe,
-    .media img,
-    .media video {
-      width: 100%;
-      height: 100%;
-      display: block;
-      border: 0;
-      object-fit: cover;
-    }
-
-    .badge {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      z-index: 2;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      background: rgba(2, 6, 23, 0.78);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #fff;
-    }
-
-    .play-icon {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      font-size: 54px;
-      color: rgba(255,255,255,0.92);
-      text-shadow: 0 4px 16px rgba(0,0,0,0.45);
-      pointer-events: none;
-    }
-
-    .content {
-      padding: 16px;
-    }
-
-    .title {
-      margin: 0 0 8px;
-      font-size: 18px;
-      line-height: 1.35;
-    }
-
-    .desc {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.55;
-    }
-
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .pill {
-      font-size: 12px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: var(--text);
-    }
-
-    .empty, .loading, .error {
-      margin-top: 18px;
-      padding: 20px;
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.8);
-      color: var(--muted);
-    }
-
-    .hidden { display: none !important; }
-
-    .download-page {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 20px;
-      align-items: start;
-    }
-
-    .panel {
-      border: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.86);
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-    }
-
-    .panel-body {
-      padding: 22px;
-    }
-
-    .back-btn, .download-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 18px;
-      border-radius: 14px;
-      font-weight: 700;
-      border: 1px solid transparent;
-      transition: .18s ease;
-    }
-
-    .back-btn {
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-      border-color: rgba(255,255,255,0.08);
-    }
-
-    .back-btn:hover { background: rgba(255,255,255,0.1); }
-
-    .download-btn {
-      width: 100%;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #02111b;
-      margin-top: 14px;
-    }
-
-    .download-btn:hover { transform: translateY(-1px); }
-
-    .dl-title {
-      margin: 14px 0 8px;
-      font-size: clamp(24px, 4vw, 36px);
-      line-height: 1.2;
-    }
-
-    .dl-text {
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 15px;
-    }
-
-    .preview {
-      aspect-ratio: 16/9;
-      background: #000;
-    }
-
-    .preview iframe,
-    .preview video,
-    .preview img {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover;
-      border: 0;
-    }
-
-    .tips {
-      margin-top: 18px;
-      padding: 14px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.65;
-    }
-
-    code.inline {
-      padding: 2px 7px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.08);
-      color: #e2e8f0;
-    }
-
-    @media (max-width: 860px) {
-      .download-page {
-        grid-template-columns: 1fr;
-      }
-
-      .toolbar {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <section id="listView">
-      <div class="hero">
-        <h1>Kho video & tải file mod</h1>
-        <p>
-          Web tĩnh đọc dữ liệu từ <code class="inline">data.json</code>. Bấm vào từng khung để mở trang tải file.
-          Nếu mạng yếu, giao diện sẽ ưu tiên hiện ảnh thumbnail YouTube thay vì nhúng video tự phát.
-        </p>
-
-        <div class="toolbar">
-          <input id="searchInput" class="input" type="text" placeholder="Tìm theo tiêu đề..." />
-          <select id="viewMode" class="select">
-            <option value="smart">Chế độ thông minh</option>
-            <option value="thumb">Chỉ thumbnail</option>
-            <option value="embed">Nhúng video</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="meta">
-        <div id="countText">Đang tải dữ liệu...</div>
-        <div>Host tốt với GitHub Pages + domain riêng</div>
-      </div>
-
-      <div id="loadingBox" class="loading">Đang tải danh sách từ <code class="inline">data.json</code>...</div>
-      <div id="errorBox" class="error hidden"></div>
-      <div id="emptyBox" class="empty hidden">Không có kết quả phù hợp.</div>
-      <div id="grid" class="grid hidden"></div>
-    </section>
-
-    <section id="detailView" class="hidden"></section>
-  </div>
-
-  <script>
-    const DATA_FILE = 'data.json';
-    let items = [];
-
-    const listView = document.getElementById('listView');
-    const detailView = document.getElementById('detailView');
-    const grid = document.getElementById('grid');
-    const loadingBox = document.getElementById('loadingBox');
-    const errorBox = document.getElementById('errorBox');
-    const emptyBox = document.getElementById('emptyBox');
-    const countText = document.getElementById('countText');
-    const searchInput = document.getElementById('searchInput');
-    const viewMode = document.getElementById('viewMode');
-
-    function getQueryParam(key) {
-      const url = new URL(window.location.href);
-      return url.searchParams.get(key);
-    }
-
-    function setQueryParam(key, value) {
-      const url = new URL(window.location.href);
-      if (value === null || value === undefined || value === '') {
-        url.searchParams.delete(key);
-      } else {
-        url.searchParams.set(key, value);
-      }
-      window.history.pushState({}, '', url);
-    }
-
-    function escapeHtml(str = '') {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    function getYoutubeId(url = '') {
-      if (!url) return null;
-      const patterns = [
-        /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
-        /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-        /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-        /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
-      ];
-
-      for (const pattern of patterns) {
-        const match = url.match(pattern);
-        if (match) return match[1];
-      }
-
-      try {
-        const parsed = new URL(url);
-        if (parsed.hostname.includes('youtube.com')) {
-          return parsed.searchParams.get('v');
-        }
-      } catch (_) {}
-
-      return null;
-    }
-
-    function isVideoFile(url = '') {
-      return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
-    }
-
-    function isGithubFile(url = '') {
-      return /githubusercontent\.com|github\.com/i.test(url);
-    }
-
-    function normalizeGithubVideo(url = '') {
-      if (!url.includes('github.com') || !url.includes('/blob/')) return url;
-      return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
-    }
-
-    function shouldUseThumbnail() {
-      const mode = viewMode.value;
-      if (mode === 'thumb') return true;
-      if (mode === 'embed') return false;
-
-      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      if (!conn) return false;
-
-      const slowTypes = ['slow-2g', '2g', '3g'];
-      return conn.saveData || slowTypes.includes(conn.effectiveType);
-    }
-
-    function renderMedia(item, options = {}) {
-      const useThumb = options.useThumb ?? shouldUseThumbnail();
-      const videoUrl = item.video || item.youtube || item.youtube_link || '';
-      const ytId = getYoutubeId(videoUrl);
-      const githubVideo = normalizeGithubVideo(videoUrl);
-
-      if (ytId) {
-        if (useThumb) {
-          return `
-            <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="${escapeHtml(item.title)}" loading="lazy" />
-            <div class="play-icon">▶</div>
-          `;
-        }
-
-        return `
-          <iframe
-            src="https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&rel=0&playsinline=1"
-            title="${escapeHtml(item.title)}"
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen>
-          </iframe>
-        `;
-      }
-
-      if (isVideoFile(githubVideo) || isGithubFile(githubVideo)) {
-        if (useThumb && item.thumbnail) {
-          return `<img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.title)}" loading="lazy" />`;
-        }
-
-        return `
-          <video controls preload="metadata" muted playsinline>
-            <source src="${escapeHtml(githubVideo)}" />
-            Trình duyệt không hỗ trợ video.
-          </video>
-        `;
-      }
-
-      if (item.thumbnail) {
-        return `<img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.title)}" loading="lazy" />`;
-      }
-
-      return `
-        <div style="width:100%;height:100%;display:grid;place-items:center;color:#94a3b8;padding:12px;text-align:center;">
-          Không có video xem trước
-        </div>
-      `;
-    }
-
-    function getItemByKey(key) {
-      return items.find(item => String(item.key) === String(key));
-    }
-
-    function renderList(data) {
-      grid.innerHTML = '';
-      loadingBox.classList.add('hidden');
-      errorBox.classList.add('hidden');
-
-      if (!data.length) {
-        emptyBox.classList.remove('hidden');
-        grid.classList.add('hidden');
-        countText.textContent = '0 mục';
-        return;
-      }
-
-      emptyBox.classList.add('hidden');
-      grid.classList.remove('hidden');
-      countText.textContent = `${data.length} mục`;
-
-      grid.innerHTML = data.map(item => `
-        <a class="card" href="?item=${encodeURIComponent(item.key)}" data-key="${escapeHtml(item.key)}">
-          <div class="media">
-            <div class="badge">${getYoutubeId(item.video || item.youtube || item.youtube_link || '') ? 'YouTube' : 'Video / File'}</div>
-            ${renderMedia(item)}
-          </div>
-          <div class="content">
-            <h3 class="title">${escapeHtml(item.title)}</h3>
-            <p class="desc">Bấm để xem chi tiết và chuyển sang trang tải file mod.</p>
-            <div class="row">
-              <span class="pill">Key: ${escapeHtml(item.key)}</span>
-              <span class="pill">Có link tải</span>
-            </div>
-          </div>
-        </a>
-      `).join('');
-    }
-
-    function renderDetail(item) {
-      listView.classList.add('hidden');
-      detailView.classList.remove('hidden');
-
-      detailView.innerHTML = `
-        <div class="download-page">
-          <div class="panel">
-            <div class="preview">${renderMedia(item, { useThumb: false })}</div>
-            <div class="panel-body">
-              <a class="back-btn" href="./">← Quay lại danh sách</a>
-              <h2 class="dl-title">${escapeHtml(item.title)}</h2>
-              <p class="dl-text">
-                Đây là trang tải file mod của mục <strong>${escapeHtml(item.key)}</strong>.
-                Bạn có thể xem nhanh video bên trên rồi bấm nút tải bên phải.
-              </p>
-              <div class="tips">
-                <strong>Mẹo:</strong> nếu bạn muốn tiết kiệm dữ liệu khi xem danh sách,
-                hãy chọn chế độ <code class="inline">Chỉ thumbnail</code> ở trang chủ để chỉ hiện ảnh preview YouTube.
+            <div class="content">
+              <h3 class="title">${escapeHtml(item.title)}</h3>
+              <p class="desc">Bấm để mở trang tải mod riêng cho mục này.</p>
+              <div class="row">
+                <span class="pill">Key: ${escapeHtml(item.key)}</span>
+                <span class="pill">Có link tải</span>
               </div>
             </div>
-          </div>
+          </a>
+        `).join('');
+      }
 
-          <div class="panel">
-            <div class="panel-body">
-              <div class="pill" style="display:inline-flex;">Key: ${escapeHtml(item.key)}</div>
-              <h3 style="margin:14px 0 8px;font-size:22px;">Tải file mod</h3>
-              <p class="dl-text">
-                Nút dưới đây sẽ mở đúng link tải file bạn đã khai báo trong <code class="inline">data.json</code>.
-              </p>
-              <a class="download-btn" href="${escapeHtml(item.download)}" target="_blank" rel="noopener noreferrer">
-                Tải file ngay
-              </a>
-              <div class="tips">
-                <strong>Link video:</strong><br />
-                <span style="word-break:break-all;">${escapeHtml(item.video || item.youtube || item.youtube_link || 'Không có')}</span>
-                <br /><br />
-                <strong>Link tải:</strong><br />
-                <span style="word-break:break-all;">${escapeHtml(item.download)}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
+      countText.textContent = `${filtered.length} mục`;
+      categoryText.textContent = `Đang lọc: ${currentCategory === 'all' ? 'tất cả' : currentCategory}`;
     }
 
-    function renderNotFound(key) {
-      listView.classList.add('hidden');
-      detailView.classList.remove('hidden');
-      detailView.innerHTML = `
-        <div class="panel">
-          <div class="panel-body">
-            <a class="back-btn" href="./">← Quay lại danh sách</a>
-            <h2 class="dl-title">Không tìm thấy mục</h2>
-            <p class="dl-text">Không có dữ liệu nào với key <strong>${escapeHtml(key || '')}</strong>.</p>
-          </div>
-        </div>
-      `;
+    function shouldShowNotice() {
+      const hideUntil = localStorage.getItem('notice_hide_until');
+      if (!hideUntil) return true;
+      return Date.now() > Number(hideUntil);
     }
 
-    function applyFilter() {
-      const q = searchInput.value.trim().toLowerCase();
-      const filtered = items.filter(item =>
-        String(item.title || '').toLowerCase().includes(q) ||
-        String(item.key || '').toLowerCase().includes(q)
-      );
-      renderList(filtered);
+    function openNotice() {
+      if (!config?.popup?.enabled) return;
+      if (!shouldShowNotice()) return;
+      noticeTitle.textContent = config.popup.title || 'Thông báo';
+      noticeMessage.innerHTML = escapeHtml(config.popup.message || '');
+      noticeModal.classList.add('show');
     }
 
-    async function loadData() {
+    closeBtn.addEventListener('click', () => {
+      noticeModal.classList.remove('show');
+      if (config?.popup?.tiktokshop_link) {
+        window.open(config.popup.tiktokshop_link, '_blank', 'noopener');
+      }
+    });
+
+    close20Btn.addEventListener('click', () => {
+      const hideUntil = Date.now() + HIDE_MINUTES * 60 * 1000;
+      localStorage.setItem('notice_hide_until', String(hideUntil));
+      noticeModal.classList.remove('show');
+    });
+
+    viewMode.addEventListener('change', applyFilter);
+    searchInput.addEventListener('input', applyFilter);
+
+    async function init() {
       try {
-        const res = await fetch(DATA_FILE, { cache: 'no-store' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const [configRes, dataRes] = await Promise.all([
+          fetch(CONFIG_FILE, { cache: 'no-store' }),
+          fetch(DATA_FILE, { cache: 'no-store' })
+        ]);
 
-        const raw = await res.json();
-        items = raw.map(item => ({
-          key: item.key,
-          title: item['tiêu đề'] || item.title || item.tieu_de || 'Chưa có tiêu đề',
-          video: item['link video youtube'] || item.video || item.youtube || item.youtube_link || '',
-          download: item['link tải file'] || item.download || item.download_link || '#',
-          thumbnail: item.thumbnail || item.thumb || ''
-        }));
+        if (!configRes.ok) throw new Error('Không đọc được config.json');
+        if (!dataRes.ok) throw new Error('Không đọc được data.json');
 
-        const selectedKey = getQueryParam('item');
-        if (selectedKey) {
-          const selectedItem = getItemByKey(selectedKey);
-          if (selectedItem) renderDetail(selectedItem);
-          else renderNotFound(selectedKey);
-          return;
-        }
+        config = await configRes.json();
+        const rawData = await dataRes.json();
+        allItems = rawData.map(normalizeItem);
 
-        renderList(items);
+        buildMenu();
+        applyFilter();
+        openNotice();
       } catch (err) {
         loadingBox.classList.add('hidden');
         errorBox.classList.remove('hidden');
-        errorBox.innerHTML = `Không đọc được file <code class="inline">${DATA_FILE}</code>. Hãy kiểm tra tên file và cấu trúc JSON.`;
-        countText.textContent = 'Lỗi tải dữ liệu';
-        console.error(err);
+        errorBox.textContent = err.message || 'Đã xảy ra lỗi khi tải dữ liệu.';
+        countText.textContent = 'Lỗi';
       }
     }
 
-    searchInput.addEventListener('input', applyFilter);
-    viewMode.addEventListener('change', () => {
-      const selectedKey = getQueryParam('item');
-      if (selectedKey) {
-        const selectedItem = getItemByKey(selectedKey);
-        if (selectedItem) renderDetail(selectedItem);
-      } else {
-        applyFilter();
-      }
-    });
-
-    window.addEventListener('popstate', () => {
-      window.location.reload();
-    });
-
-    loadData();
+    init();
   </script>
 </body>
 </html>
