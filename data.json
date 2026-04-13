@@ -1,0 +1,15 @@
+[
+  {
+    "key": "mod-001",
+    "tiêu đề": "Mod 1 - Hướng dẫn cài đặt",
+    "link video youtube": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "link tải file": "https://example.com/file1.zip"
+  },
+  {
+    "key": "mod-002",
+    "tiêu đề": "Mod 2 - Video demo",
+    "link video youtube": "https://www.youtube.com/watch?v=ysz5S6PUM-U",
+    "link tải file": "https://example.com/file2.zip",
+    "thumbnail": "https://img.youtube.com/vi/ysz5S6PUM-U/hqdefault.jpg"
+  }
+]
