@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+
+    function renderMedia(item) {
+      const ytId = getYoutubeId(item.video);
+      const fileVideo = normalizeGithubVideo(item.video || '');
+
+      if (ytId) {
+        return `
+          <iframe
+            src="https://www.youtube.com/embed/${ytId}?rel=0&playsinline=1"
+            title="${escapeHtml(item.title)}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen>
+          </iframe>
+        `;
+      }
+
+      if (isVideoFile(fileVideo)) {
+        return `
+          <video controls preload="metadata" playsinline>
+            <source src="${escapeHtml(fileVideo)}" />
+          </video>
+        `;
+      }
+
+      if (item.thumbnail) {
+        return `<img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.title)}" />`;
+      }
+
+      return `<div style="width:100%;height:100%;display:grid;place-items:center;color:#9fb2d9;">Không có preview</div>`;
+    }
+
+    function renderError(message) {
+      app.innerHTML = `<div class="error">${escapeHtml(message)}</div>`;
+    }
+
+    async function init() {
+      const apiKey = getParam('api');
+      if (!apiKey) {
+        renderError('Thiếu tham số api. Vui lòng quay lại trang chủ và chọn đúng mục.');
+        return;
+      }
+
+      try {
+        const res = await fetch(DATA_FILE, { cache: 'no-store' });
+        if (!res.ok) throw new Error('Không đọc được data.json');
+        const raw = await res.json();
+        const items = raw.map(normalizeItem);
+        const item = items.find(x => String(x.key) === String(apiKey));
+
+        if (!item) {
+          renderError(`Không tìm thấy dữ liệu cho key: ${apiKey}`);
+          return;
+        }
+
+        app.innerHTML = `
+          <div class="layout">
+            <section class="panel">
+              <div class="preview">${renderMedia(item)}</div>
+              <div class="body">
+                <h1>${escapeHtml(item.title)}</h1>
+                <p>Đây là trang tải file riêng, đã tách khỏi trang chủ để gọn hơn và giảm lỗi khi dùng GitHub Pages.</p>
+                <div class="row">
+                  <span class="pill">Key: ${escapeHtml(item.key)}</span>
+                  <span class="pill">Danh mục: ${escapeHtml(item.category)}</span>
+                </div>
+              </div>
+            </section>
+
+            <aside class="panel">
+              <div class="body">
+                <h2 style="margin:0 0 10px;font-size:28px;">Tải file mod</h2>
+                <p>Bấm nút dưới đây để mở link tải file đã khai báo trong dữ liệu JSON.</p>
+                <a class="download-btn" href="${escapeHtml(item.download)}" target="_blank" rel="noopener noreferrer">Tải file ngay</a>
+                <div class="box"><b>Link video:</b><br>${escapeHtml(item.video || 'Không có')}</div>
+                <div class="box"><b>Link tải:</b><br>${escapeHtml(item.download)}</div>
+              </div>
+            </aside>
+          </div>
+        `;
+      } catch (err) {
+        renderError(err.message || 'Đã xảy ra lỗi.');
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
