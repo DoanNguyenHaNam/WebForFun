@@ -1,4 +1,3 @@
-html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -7,173 +6,386 @@ html
   <title>PminMod | Kho mod</title>
   <style>
     :root {
-      --bg1: #020617;
-      --bg2: #071427;
-      --panel: rgba(10, 20, 42, 0.78);
-      --panel-2: rgba(13, 25, 50, 0.92);
-      --card: rgba(13, 24, 48, 0.95);
-      --card-hover: rgba(18, 34, 68, 0.98);
-      --text: #eef4ff;
-      --muted: #9db1d6;
-      --accent: #7dd3fc;
-      --accent2: #93c5fd;
-      --border: rgba(255,255,255,0.08);
+      --sidebar-w: 240px;
+      --sidebar-collapsed: 82px;
+      --bg-dark: #030a16;
+      --panel: rgba(7, 16, 34, 0.72);
+      --panel-2: rgba(10, 20, 42, 0.84);
+      --card: rgba(10, 19, 38, 0.88);
+      --card-hover: rgba(14, 28, 54, 0.96);
+      --text: #edf4ff;
+      --muted: #a8b6d3;
+      --line: rgba(255,255,255,0.08);
+      --blue: #60a5fa;
+      --blue-2: #7dd3fc;
       --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius: 22px;
     }
 
     * { box-sizing: border-box; }
-    body {
+
+    html, body {
       margin: 0;
-      min-height: 100vh;
+      min-height: 100%;
+      font-family: Inter, Arial, Helvetica, sans-serif;
       color: var(--text);
-      font-family: Inter, Arial, sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(125,211,252,0.10), transparent 25%),
-        radial-gradient(circle at top right, rgba(147,197,253,0.10), transparent 20%),
-        linear-gradient(180deg, var(--bg1) 0%, #03101f 45%, var(--bg2) 100%);
-      position: relative;
+      background: var(--bg-dark);
       overflow-x: hidden;
     }
 
-    body::before {
-      content: "";
+    body {
+      position: relative;
+    }
+
+    .bg-video {
       position: fixed;
       inset: 0;
-      background:
-        linear-gradient(rgba(2,6,23,0.72), rgba(2,6,23,0.86)),
-        url("assets/bg.jpg") center/cover no-repeat;
-      opacity: 0.2;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -3;
+      opacity: 0.22;
+      pointer-events: none;
+      filter: saturate(0.95) contrast(1.05);
+    }
+
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
       z-index: -2;
       pointer-events: none;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,0.13), transparent 24%),
+        radial-gradient(circle at top right, rgba(125,211,252,0.11), transparent 18%),
+        linear-gradient(180deg, rgba(1,8,20,0.84) 0%, rgba(1,8,20,0.90) 44%, rgba(1,8,20,0.96) 100%);
     }
 
-    body::after {
-      content: "";
+    .grid-overlay {
       position: fixed;
       inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
-      background-size: 34px 34px;
-      mask-image: linear-gradient(to bottom, rgba(255,255,255,.45), transparent 85%);
       z-index: -1;
       pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.016) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.016) 1px, transparent 1px);
+      background-size: 30px 30px;
+      mask-image: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent 85%);
     }
 
-    a { color: inherit; text-decoration: none; }
-
-    .container {
-      width: min(1240px, calc(100% - 28px));
-      margin: 0 auto;
-      padding: 24px 0 48px;
+    .app {
+      display: flex;
+      min-height: 100vh;
     }
 
-    .hero {
-      padding: 26px;
-      border-radius: 28px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: var(--sidebar-w);
+      padding: 16px 14px;
+      background: rgba(6, 14, 28, 0.78);
+      border-right: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: width .22s ease, transform .22s ease;
+      z-index: 20;
+    }
+
+    .sidebar.collapsed {
+      width: var(--sidebar-collapsed);
     }
 
     .brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 12px;
+      padding: 6px 4px 10px;
+      min-height: 58px;
     }
 
     .logo {
-      width: 48px;
-      height: 48px;
-      border-radius: 16px;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
       display: grid;
       place-items: center;
-      color: #02111c;
+      color: #03111d;
       font-weight: 900;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      background: linear-gradient(135deg, var(--blue), var(--blue-2));
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+
+    .brand-text {
+      min-width: 0;
+      transition: opacity .18s ease;
     }
 
     .brand-text h1 {
       margin: 0;
-      font-size: 30px;
-      line-height: 1.1;
+      font-size: 18px;
+      line-height: 1.15;
     }
 
     .brand-text p {
       margin: 4px 0 0;
+      font-size: 12px;
       color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar.collapsed .brand-text,
+    .sidebar.collapsed .nav-label,
+    .sidebar.collapsed .sidebar-bottom span,
+    .sidebar.collapsed .section-title,
+    .sidebar.collapsed .sidebar-top-actions .mode-wrap {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .sidebar-top-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0 2px;
+    }
+
+    .toggle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .mode-wrap {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mode-select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(2, 8, 20, 0.72);
+      color: var(--text);
+      outline: none;
+      font-size: 13px;
+    }
+
+    .section-title {
+      padding: 0 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #88a0c8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 46px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      cursor: pointer;
+      transition: .18s ease;
+      text-align: left;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: rgba(96,165,250,0.13);
+      border-color: rgba(96,165,250,0.25);
+      transform: translateX(1px);
+    }
+
+    .nav-icon {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+
+    .nav-label {
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+    }
+
+    .sidebar-bottom strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .sidebar-bottom span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .main {
+      flex: 1;
+      margin-left: var(--sidebar-w);
+      padding: 18px 18px 36px;
+      transition: margin-left .22s ease;
+    }
+
+    .sidebar.collapsed + .main {
+      margin-left: var(--sidebar-collapsed);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .search-box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+    }
+
+    .search-box input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--text);
       font-size: 14px;
     }
 
-    .hero-title {
-      font-size: clamp(30px, 4vw, 52px);
-      line-height: 1.03;
-      letter-spacing: -0.04em;
-      margin: 14px 0 8px;
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .hero-desc {
+    .stat-pill {
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--panel);
       color: var(--muted);
-      line-height: 1.7;
-      margin: 0;
-      max-width: 780px;
+      font-size: 13px;
+      white-space: nowrap;
+      backdrop-filter: blur(12px);
     }
 
-    .menu {
+    .hero {
+      border-radius: 26px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(7,16,34,0.76), rgba(4,12,26,0.84));
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 46px);
+      line-height: 1.04;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 760px;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .toolbar-inline {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
-    .menu-btn {
-      border: 1px solid var(--border);
+    .toolbar-inline .left,
+    .toolbar-inline .right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
       background: rgba(255,255,255,0.04);
       color: var(--text);
-      padding: 12px 16px;
-      border-radius: 14px;
+      font-size: 13px;
       font-weight: 700;
       cursor: pointer;
       transition: .18s ease;
     }
 
-    .menu-btn:hover,
-    .menu-btn.active {
-      background: linear-gradient(135deg, rgba(125,211,252,0.16), rgba(147,197,253,0.12));
-      border-color: rgba(125,211,252,0.35);
-      transform: translateY(-1px);
+    .chip:hover,
+    .chip.active {
+      background: rgba(96,165,250,0.15);
+      border-color: rgba(96,165,250,0.28);
     }
 
-    .toolbar {
-      display: grid;
-      grid-template-columns: 1fr 200px;
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .input,
-    .select {
-      width: 100%;
-      padding: 14px 16px;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      background: rgba(2, 8, 20, 0.75);
-      color: var(--text);
-      outline: none;
-      font-size: 14px;
-    }
-
-    .meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin: 16px 0;
+    .count-text,
+    .category-text {
       color: var(--muted);
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .grid {
@@ -183,19 +395,21 @@ html
     }
 
     .card {
-      display: block;
-      border-radius: 24px;
+      border-radius: 22px;
       overflow: hidden;
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, var(--card) 0%, rgba(8, 17, 36, 0.98) 100%);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--card) 0%, rgba(7,15,32,0.96) 100%);
       box-shadow: var(--shadow);
       transition: .18s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
     }
 
     .card:hover {
-      transform: translateY(-5px);
-      border-color: rgba(125,211,252,0.35);
-      background: linear-gradient(180deg, var(--card-hover) 0%, rgba(10, 20, 42, 0.98) 100%);
+      transform: translateY(-4px);
+      border-color: rgba(125,211,252,0.28);
+      background: linear-gradient(180deg, var(--card-hover) 0%, rgba(8,17,36,0.98) 100%);
     }
 
     .media {
@@ -211,39 +425,40 @@ html
       width: 100%;
       height: 100%;
       display: block;
-      border: 0;
       object-fit: cover;
+      border: 0;
     }
 
     .badge,
-    .cat {
+    .cat-badge {
       position: absolute;
       top: 12px;
       z-index: 2;
+      padding: 7px 10px;
+      border-radius: 999px;
       font-size: 12px;
       font-weight: 800;
-      border-radius: 999px;
-      padding: 7px 10px;
     }
 
     .badge {
       left: 12px;
-      background: rgba(2,6,23,.58);
-      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(2,6,23,0.55);
+      border: 1px solid rgba(255,255,255,0.10);
     }
 
-    .cat {
+    .cat-badge {
       right: 12px;
-      color: #02111c;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #03111d;
+      background: linear-gradient(135deg, var(--blue), var(--blue-2));
     }
 
-    .play {
+    .play-icon {
       position: absolute;
       inset: 0;
       display: grid;
       place-items: center;
-      font-size: 56px;
+      font-size: 54px;
+      color: rgba(255,255,255,0.95);
       text-shadow: 0 6px 18px rgba(0,0,0,0.45);
       pointer-events: none;
     }
@@ -261,7 +476,7 @@ html
     .desc {
       margin: 0;
       color: var(--muted);
-      line-height: 1.6;
+      line-height: 1.58;
       font-size: 14px;
     }
 
@@ -276,17 +491,17 @@ html
       padding: 7px 10px;
       border-radius: 999px;
       font-size: 12px;
-      background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.05);
     }
 
-    .box {
-      margin-top: 18px;
-      padding: 18px;
+    .message {
+      padding: 16px 18px;
       border-radius: 18px;
-      border: 1px solid var(--border);
-      background: rgba(7, 18, 40, 0.82);
+      border: 1px solid var(--line);
+      background: var(--panel-2);
       color: var(--muted);
+      box-shadow: var(--shadow);
     }
 
     .hidden { display: none !important; }
@@ -298,9 +513,9 @@ html
       align-items: center;
       justify-content: center;
       padding: 18px;
-      background: rgba(2,6,23,.72);
+      background: rgba(2,6,23,0.72);
       backdrop-filter: blur(8px);
-      z-index: 1000;
+      z-index: 50;
     }
 
     .modal-wrap.show { display: flex; }
@@ -309,8 +524,8 @@ html
       width: min(520px, 100%);
       border-radius: 26px;
       overflow: hidden;
-      background: linear-gradient(180deg, rgba(13,25,50,0.98), rgba(8,18,38,0.98));
-      border: 1px solid var(--border);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(11,20,40,0.98), rgba(6,14,28,0.98));
       box-shadow: var(--shadow);
     }
 
@@ -321,12 +536,14 @@ html
     .modal-body h3 {
       margin: 0 0 10px;
       font-size: 28px;
+      line-height: 1.14;
     }
 
     .modal-body p {
       margin: 0;
       color: var(--muted);
       line-height: 1.7;
+      font-size: 15px;
     }
 
     .modal-actions {
@@ -339,7 +556,7 @@ html
     .btn {
       padding: 13px 14px;
       border-radius: 14px;
-      border: 1px solid var(--border);
+      border: 1px solid var(--line);
       background: rgba(255,255,255,0.05);
       color: var(--text);
       font-weight: 800;
@@ -347,57 +564,153 @@ html
     }
 
     .btn.primary {
-      color: #02111c;
+      background: linear-gradient(135deg, var(--blue), var(--blue-2));
+      color: #03111d;
       border-color: transparent;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
     }
 
-    @media (max-width: 860px) {
-      .toolbar { grid-template-columns: 1fr; }
-      .modal-actions { grid-template-columns: 1fr; }
-      .hero { padding: 18px; }
-      .container { width: min(100% - 18px, 1240px); }
+    @media (max-width: 960px) {
+      .sidebar {
+        transform: translateX(-100%);
+        width: var(--sidebar-w);
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .sidebar.collapsed {
+        width: var(--sidebar-w);
+      }
+
+      .sidebar.collapsed .brand-text,
+      .sidebar.collapsed .nav-label,
+      .sidebar.collapsed .sidebar-bottom span,
+      .sidebar.collapsed .section-title,
+      .sidebar.collapsed .sidebar-top-actions .mode-wrap {
+        opacity: 1;
+        width: auto;
+        overflow: visible;
+        pointer-events: auto;
+      }
+
+      .main,
+      .sidebar.collapsed + .main {
+        margin-left: 0;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        padding-top: 2px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .main {
+        padding: 14px 14px 28px;
+      }
+
+      .hero {
+        padding: 18px;
+      }
+
+      .modal-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar-inline {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toolbar-inline .left,
+      .toolbar-inline .right {
+        width: 100%;
+      }
+
+      .search-box {
+        padding: 11px 12px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <section class="hero">
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="https://pminmod.site/ai_check_sub/vidpmin.mp4" type="video/mp4" />
+  </video>
+  <div class="bg-overlay"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="app">
+    <aside id="sidebar" class="sidebar collapsed">
       <div class="brand">
         <div class="logo">PM</div>
         <div class="brand-text">
           <h1>PminMod</h1>
-          <p>Kho video mod, mod pack, mod reup</p>
+          <p>Kho mod gọn, dễ tìm, dễ tải</p>
         </div>
       </div>
 
-      <h2 class="hero-title">Kho video & tải file mod</h2>
-      <p class="hero-desc">
-        Bấm vào từng khung để sang trang tải file riêng. Nội dung menu nằm trong <b>config.json</b>,
-        dữ liệu mod nằm trong <b>data.json</b>.
-      </p>
-
-      <nav class="menu" id="menu"></nav>
-
-      <div class="toolbar">
-        <input id="searchInput" class="input" type="text" placeholder="Tìm theo tiêu đề hoặc key..." />
-        <select id="viewMode" class="select">
-          <option value="smart">Chế độ thông minh</option>
-          <option value="thumb">Chỉ thumbnail</option>
-          <option value="embed">Nhúng video</option>
-        </select>
+      <div class="sidebar-top-actions">
+        <button id="toggleSidebar" class="toggle-btn" aria-label="Thu gọn menu">☰</button>
+        <div class="mode-wrap">
+          <select id="viewMode" class="mode-select">
+            <option value="thumb">Chế độ ảnh thumb</option>
+            <option value="smart">Chế độ thông minh</option>
+            <option value="embed">Ưu tiên video</option>
+          </select>
+        </div>
       </div>
-    </section>
 
-    <div class="meta">
-      <div id="countText">Đang tải dữ liệu...</div>
-      <div id="categoryText">Đang lọc: tất cả</div>
-    </div>
+      <div class="section-title">Danh mục</div>
+      <nav id="menu" class="nav"></nav>
 
-    <div id="loadingBox" class="box">Đang tải danh sách...</div>
-    <div id="errorBox" class="box hidden"></div>
-    <div id="emptyBox" class="box hidden">Không có mục nào phù hợp.</div>
-    <div id="grid" class="grid hidden"></div>
+      <div class="sidebar-bottom">
+        <div class="nav-icon">📌</div>
+        <div>
+          <strong>Thông báo</strong>
+          <span>Popup và TikTok Shop chỉnh trong config.json</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="search-box">
+          <span>🔎</span>
+          <input id="searchInput" type="text" placeholder="Tìm theo tiêu đề hoặc key..." />
+        </div>
+        <div class="topbar-right">
+          <div id="countText" class="stat-pill">Đang tải...</div>
+        </div>
+      </div>
+
+      <section class="hero">
+        <h2>Kho video & tải file mod</h2>
+        <p>
+          Mình đã đổi layout sang kiểu sidebar gọn hơn giống dashboard: menu nằm bên trái, có thể thu gọn, còn chế độ hiển thị nằm ngay trong thanh đó.
+          Mặc định khi vào sẽ là <b>ảnh thumb</b>, mục nào không có thumbnail mới ưu tiên chạy video.
+        </p>
+      </section>
+
+      <div class="toolbar-inline">
+        <div class="left">
+          <div id="categoryText" class="category-text">Đang lọc: tất cả</div>
+        </div>
+        <div class="right">
+          <button id="thumbQuickBtn" class="chip active" type="button">Ảnh thumb</button>
+          <button id="smartQuickBtn" class="chip" type="button">Thông minh</button>
+          <button id="videoQuickBtn" class="chip" type="button">Video</button>
+        </div>
+      </div>
+
+      <div id="loadingBox" class="message">Đang tải danh sách...</div>
+      <div id="errorBox" class="message hidden"></div>
+      <div id="emptyBox" class="message hidden">Không có mục nào phù hợp.</div>
+      <div id="grid" class="grid hidden"></div>
+    </main>
   </div>
 
   <div id="noticeModal" class="modal-wrap">
@@ -422,15 +735,22 @@ html
     let currentCategory = 'all';
     let config = { categories: [], popup: {} };
 
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const viewMode = document.getElementById('viewMode');
+    const searchInput = document.getElementById('searchInput');
     const grid = document.getElementById('grid');
     const loadingBox = document.getElementById('loadingBox');
     const errorBox = document.getElementById('errorBox');
     const emptyBox = document.getElementById('emptyBox');
     const countText = document.getElementById('countText');
     const categoryText = document.getElementById('categoryText');
-    const searchInput = document.getElementById('searchInput');
-    const viewMode = document.getElementById('viewMode');
     const menu = document.getElementById('menu');
+
+    const thumbQuickBtn = document.getElementById('thumbQuickBtn');
+    const smartQuickBtn = document.getElementById('smartQuickBtn');
+    const videoQuickBtn = document.getElementById('videoQuickBtn');
+
     const noticeModal = document.getElementById('noticeModal');
     const noticeTitle = document.getElementById('noticeTitle');
     const noticeMessage = document.getElementById('noticeMessage');
@@ -476,16 +796,6 @@ html
       return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
     }
 
-    function shouldUseThumbnail() {
-      const mode = viewMode.value;
-      if (mode === 'thumb') return true;
-      if (mode === 'embed') return false;
-
-      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      if (!conn) return false;
-      return conn.saveData || ['slow-2g', '2g', '3g'].includes(conn.effectiveType);
-    }
-
     function normalizeItem(item) {
       return {
         key: item.key || '',
@@ -497,17 +807,34 @@ html
       };
     }
 
+    function currentMode() {
+      return viewMode.value || 'thumb';
+    }
+
+    function shouldUseThumbnail(item) {
+      const mode = currentMode();
+      if (mode === 'thumb') return true;
+      if (mode === 'embed') return false;
+
+      if (item.thumbnail) return true;
+
+      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (!conn) return false;
+      return conn.saveData || ['slow-2g', '2g', '3g'].includes(conn.effectiveType);
+    }
+
     function renderMedia(item) {
-      const useThumb = shouldUseThumbnail();
       const ytId = getYoutubeId(item.video);
       const videoUrl = normalizeGithubVideo(item.video || '');
+      const useThumb = shouldUseThumbnail(item);
+
+      if (item.thumbnail && useThumb) {
+        return `<img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.title)}" loading="lazy"><div class="play-icon">▶</div>`;
+      }
 
       if (ytId) {
         if (useThumb) {
-          return `
-            <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="${escapeHtml(item.title)}" loading="lazy">
-            <div class="play">▶</div>
-          `;
+          return `<img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="${escapeHtml(item.title)}" loading="lazy"><div class="play-icon">▶</div>`;
         }
 
         return `
@@ -533,22 +860,41 @@ html
         return `<img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.title)}" loading="lazy">`;
       }
 
-      return `<div style="width:100%;height:100%;display:grid;place-items:center;color:#9db1d6;">Không có preview</div>`;
+      return `<div style="width:100%;height:100%;display:grid;place-items:center;color:#a8b6d3;">Không có preview</div>`;
+    }
+
+    function syncModeButtons() {
+      thumbQuickBtn.classList.toggle('active', currentMode() === 'thumb');
+      smartQuickBtn.classList.toggle('active', currentMode() === 'smart');
+      videoQuickBtn.classList.toggle('active', currentMode() === 'embed');
+    }
+
+    function setMode(mode) {
+      viewMode.value = mode;
+      syncModeButtons();
+      applyFilter();
     }
 
     function buildMenu() {
       const categories = ['all', ...(config.categories || ['mod-lẻ', 'mod-pack', 'mod-reup'])];
       menu.innerHTML = categories.map(cat => {
         const label = cat === 'all' ? 'Trang chủ' : cat;
+        const icon = cat === 'all' ? '🏠' : cat === 'mod-lẻ' ? '🧩' : cat === 'mod-pack' ? '📦' : '♻️';
         const active = cat === currentCategory ? 'active' : '';
-        return `<button class="menu-btn ${active}" data-cat="${escapeHtml(cat)}">${escapeHtml(label)}</button>`;
+        return `
+          <button class="nav-item ${active}" data-cat="${escapeHtml(cat)}" type="button">
+            <span class="nav-icon">${icon}</span>
+            <span class="nav-label">${escapeHtml(label)}</span>
+          </button>
+        `;
       }).join('');
 
-      menu.querySelectorAll('.menu-btn').forEach(btn => {
+      menu.querySelectorAll('.nav-item').forEach(btn => {
         btn.addEventListener('click', () => {
           currentCategory = btn.dataset.cat;
           buildMenu();
           applyFilter();
+          if (window.innerWidth <= 960) sidebar.classList.remove('show');
         });
       });
     }
@@ -571,12 +917,12 @@ html
         emptyBox.classList.add('hidden');
         grid.classList.remove('hidden');
         grid.innerHTML = filtered.map(item => {
-          const badge = getYoutubeId(item.video) ? 'YouTube' : 'Preview';
+          const badge = getYoutubeId(item.video) ? 'YouTube' : item.thumbnail ? 'Thumbnail' : 'Preview';
           return `
             <a class="card" href="download.html?api=${encodeURIComponent(item.key)}">
               <div class="media">
                 <div class="badge">${escapeHtml(badge)}</div>
-                <div class="cat">${escapeHtml(item.category)}</div>
+                <div class="cat-badge">${escapeHtml(item.category)}</div>
                 ${renderMedia(item)}
               </div>
               <div class="content">
@@ -605,11 +951,28 @@ html
     function openNotice() {
       if (!config.popup || !config.popup.enabled) return;
       if (!shouldShowNotice()) return;
-
       noticeTitle.textContent = config.popup.title || 'Thông báo';
       noticeMessage.textContent = config.popup.message || '';
       noticeModal.classList.add('show');
     }
+
+    toggleSidebar.addEventListener('click', () => {
+      if (window.innerWidth <= 960) {
+        sidebar.classList.toggle('show');
+      } else {
+        sidebar.classList.toggle('collapsed');
+      }
+    });
+
+    viewMode.addEventListener('change', () => {
+      syncModeButtons();
+      applyFilter();
+    });
+
+    searchInput.addEventListener('input', applyFilter);
+    thumbQuickBtn.addEventListener('click', () => setMode('thumb'));
+    smartQuickBtn.addEventListener('click', () => setMode('smart'));
+    videoQuickBtn.addEventListener('click', () => setMode('embed'));
 
     closeBtn.addEventListener('click', () => {
       noticeModal.classList.remove('show');
@@ -623,9 +986,6 @@ html
       localStorage.setItem('notice_hide_until', String(hideUntil));
       noticeModal.classList.remove('show');
     });
-
-    viewMode.addEventListener('change', applyFilter);
-    searchInput.addEventListener('input', applyFilter);
 
     async function init() {
       try {
@@ -641,7 +1001,9 @@ html
         const rawData = await dataRes.json();
         allItems = rawData.map(normalizeItem);
 
+        viewMode.value = 'thumb';
         buildMenu();
+        syncModeButtons();
         applyFilter();
         openNotice();
       } catch (err) {
