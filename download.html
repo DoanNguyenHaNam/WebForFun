@@ -2,597 +2,129 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PminMod | Tải mod</title>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-dark: #090212;
-      --panel: rgba(20, 7, 28, 0.74);
-      --panel-2: rgba(18, 9, 30, 0.86);
-      --card: rgba(20, 8, 34, 0.84);
-      --text: #f7effa;
-      --muted: #d0b9d8;
-      --line: rgba(255,255,255,0.09);
-      --pink: #ff5db1;
-      --pink-2: #ff8ec8;
-      --shadow: 0 20px 60px rgba(0,0,0,0.38);
-      --glow: 0 0 0 1px rgba(255, 93, 177, 0.16), 0 0 24px rgba(255, 93, 177, 0.18), 0 16px 40px rgba(0,0,0,0.28);
-    }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PminMod | Download</title>
 
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;
-      color: var(--text);
-      background: var(--bg-dark);
-      overflow-x: hidden;
-    }
-
-    body { position: relative; }
-
-    .bg-video {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -3;
-      opacity: 0.34;
-      pointer-events: none;
-      filter: saturate(1.12) brightness(0.92);
-    }
-
-    .bg-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at top left, rgba(255, 105, 180, 0.24), transparent 30%),
-        radial-gradient(circle at top right, rgba(255, 0, 150, 0.18), transparent 24%),
-        linear-gradient(180deg, rgba(20, 0, 20, 0.70) 0%, rgba(10, 0, 15, 0.84) 50%, rgba(5, 0, 10, 0.94) 100%);
-    }
-
-    .grid-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.016) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.016) 1px, transparent 1px);
-      background-size: 30px 30px;
-      mask-image: linear-gradient(to bottom, rgba(255,255,255,0.28), transparent 85%);
-    }
-
-    .wrap {
-      width: min(1180px, calc(100% - 24px));
-      margin: 0 auto;
-      padding: 14px 0 28px;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .back {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      color: var(--text);
-      text-decoration: none;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-      font-weight: 700;
-      font-size: 14px;
-    }
-
-    .top-pill {
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      color: var(--muted);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-      font-size: 13px;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 14px;
-      align-items: start;
-    }
-
-    .panel {
-      border-radius: 22px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(25, 8, 34, 0.72), rgba(11, 4, 17, 0.80));
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-    }
-
-    .preview {
-      aspect-ratio: 16 / 9;
-      background: #000;
-      position: relative;
-    }
-
-    .preview img,
-    .preview iframe,
-    .preview video {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover;
-      border: 0;
-    }
-
-    .badge {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      z-index: 2;
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      background: rgba(16, 3, 14, 0.55);
-      border: 1px solid rgba(255,255,255,0.10);
-    }
-
-    .body {
-      padding: 16px;
-    }
-
-    .title {
-      margin: 0 0 8px;
-      font-size: clamp(24px, 3.2vw, 36px);
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-    }
-
-    .text {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 14px;
-    }
-
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .pill {
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      border: 1px solid rgba(255,255,255,0.06);
-      background: rgba(255,255,255,0.05);
-    }
-
-    .download-btn,
-    .secondary-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      text-decoration: none;
-      padding: 13px 15px;
-      border-radius: 14px;
-      font-weight: 800;
-      transition: .18s ease;
-      font-size: 14px;
-    }
-
-    .download-btn {
-      margin-top: 14px;
-      background: linear-gradient(135deg, var(--pink), var(--pink-2));
-      color: #2a0419;
-      box-shadow: var(--glow);
-    }
-
-    .secondary-btn {
-      margin-top: 10px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--line);
-      color: var(--text);
-    }
-
-    .download-btn:hover,
-    .secondary-btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .info-box {
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
-      color: var(--muted);
-      word-break: break-word;
-      line-height: 1.65;
-      font-size: 13px;
-    }
-
-    .section {
-      margin-top: 14px;
-    }
-
-    .section-title {
-      margin: 0 0 10px;
-      font-size: 18px;
-      line-height: 1.2;
-    }
-
-    .comments {
-      display: grid;
-      gap: 10px;
-    }
-
-    .comment {
-      display: flex;
-      gap: 10px;
-      padding: 12px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.06);
-      background: rgba(255,255,255,0.04);
-    }
-
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      display: grid;
-      place-items: center;
-      font-size: 14px;
-      font-weight: 800;
-      color: #2a0419;
-      background: linear-gradient(135deg, var(--pink), var(--pink-2));
-    }
-
-    .comment-body {
-      min-width: 0;
-      flex: 1;
-    }
-
-    .comment-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 4px;
-    }
-
-    .comment-name {
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .comment-time {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .comment-text {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .comment-actions {
-      display: flex;
-      gap: 14px;
-      margin-top: 8px;
-      color: #efb5d8;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .error,
-    .skeleton {
-      padding: 18px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: var(--panel-2);
-      color: var(--muted);
-      box-shadow: var(--shadow);
-    }
-
-    .skeleton {
-      overflow: hidden;
-    }
-
-    .sk-line,
-    .sk-media {
-      position: relative;
-      overflow: hidden;
-      background: rgba(255,255,255,0.06);
-      border-radius: 12px;
-    }
-
-    .sk-line::after,
-    .sk-media::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      transform: translateX(-100%);
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-      animation: shimmer 1.4s infinite;
-    }
-
-    .sk-media {
-      aspect-ratio: 16 / 9;
-      margin-bottom: 14px;
-    }
-
-    .sk-line { height: 14px; margin-bottom: 10px; }
-    .sk-line.lg { height: 20px; width: 58%; }
-    .sk-line.md { width: 100%; }
-    .sk-line.sm { width: 72%; margin-bottom: 0; }
-
-    @keyframes shimmer {
-      100% { transform: translateX(100%); }
-    }
-
-    @media (max-width: 900px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 720px) {
-      .wrap {
-        width: min(100% - 16px, 1180px);
-        padding: 10px 0 20px;
-      }
-
-      .topbar {
-        flex-wrap: wrap;
-      }
-
-      .title {
-        font-size: 24px;
-      }
-
-      .body {
-        padding: 14px;
-      }
-
-      .comment {
-        padding: 10px;
-      }
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style/download.css">
 </head>
+
 <body>
-  <video class="bg-video" autoplay muted loop playsinline>
-    <source src="https://pminmod.site/ai_check_sub/vidpmin.mp4" type="video/mp4" />
-  </video>
-  <div class="bg-overlay"></div>
-  <div class="grid-overlay"></div>
 
-  <div class="wrap">
-    <div class="topbar">
-      <a class="back" href="index.html">← Quay lại trang chủ</a>
-      <div class="top-pill">Trang tải file riêng</div>
-    </div>
+<div class="wrap">
+  <a href="index.html" class="back">← Quay lại</a>
 
-    <div id="app" class="skeleton">
-      <div class="sk-media"></div>
-      <div class="sk-line lg"></div>
-      <div class="sk-line md"></div>
-      <div class="sk-line sm"></div>
-    </div>
-  </div>
+  <div id="app">Loading...</div>
+</div>
 
-  <script>
-    const DATA_FILE = 'data.json';
-    const app = document.getElementById('app');
+<script>
+const DATA = 'data.json';
+const CMT = 'cmt.json';
 
-    function escapeHtml(str = '') {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/\"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
+const app = document.getElementById("app");
 
-    function getParam(name) {
-      return new URL(window.location.href).searchParams.get(name);
-    }
+// ====== UTILS ======
 
-    function getYoutubeId(url = '') {
-      const patterns = [
-        /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
-        /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-        /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-        /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
-      ];
-      for (const pattern of patterns) {
-        const match = url.match(pattern);
-        if (match) return match[1];
-      }
-      try {
-        const parsed = new URL(url);
-        return parsed.searchParams.get('v');
-      } catch {
-        return null;
-      }
-    }
+function getParam(name){
+  return new URL(location.href).searchParams.get(name);
+}
 
-    function normalizeGithubVideo(url = '') {
-      if (!url.includes('github.com') || !url.includes('/blob/')) return url;
-      return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
-    }
+// mask tên
+function maskName(name){
+  return name.split(" ").map(w=>{
+    if(w.length <= 2) return w;
+    return w.slice(0,2) + "***";
+  }).join(" ");
+}
 
-    function isVideoFile(url = '') {
-      return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
-    }
+// random không trùng
+function pickRandom(arr, count){
+  let shuffled = [...arr].sort(()=>0.5-Math.random());
+  return shuffled.slice(0, count);
+}
 
-    function normalizeItem(item) {
-      return {
-        key: item.key || '',
-        title: item['tiêu đề'] || item.title || 'Chưa có tiêu đề',
-        category: item.category || 'mod-lẻ',
-        video: item['link video youtube'] || item.video || '',
-        download: item['link tải file'] || item.download || '#',
-        thumbnail: item.thumbnail || ''
-      };
-    }
+// lấy youtube id
+function getYT(url){
+  let match = url.match(/v=([^&]+)/);
+  return match ? match[1] : "";
+}
 
-    function renderMedia(item) {
-      const ytId = getYoutubeId(item.video);
-      const videoUrl = normalizeGithubVideo(item.video || '');
+// ====== MAIN ======
 
-      if (ytId) {
-        return `
-          <div class="badge">YouTube</div>
-          <iframe
-            src="https://www.youtube.com/embed/${ytId}?rel=0&playsinline=1"
-            title="${escapeHtml(item.title)}"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen>
-          </iframe>
-        `;
-      }
+async function init(){
+  const key = getParam("api");
 
-      if (isVideoFile(videoUrl)) {
-        return `
-          <div class="badge">Video</div>
-          <video controls preload="metadata" playsinline>
-            <source src="${escapeHtml(videoUrl)}">
-          </video>
-        `;
-      }
+  const [dataRes, cmtRes] = await Promise.all([
+    fetch(DATA),
+    fetch(CMT)
+  ]);
 
-      if (item.thumbnail) {
-        return `
-          <div class="badge">Thumbnail</div>
-          <img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.title)}">
-        `;
-      }
+  const data = await dataRes.json();
+  const comments = await cmtRes.json();
 
-      return `<div style="width:100%;height:100%;display:grid;place-items:center;color:#d0b9d8;">Không có preview</div>`;
-    }
+  const item = data.find(x=>String(x.key) === key);
 
-    function fakeComments(item) {
-      const comments = [
-        { name: 'Hùng Mod', text: `Bản ${item.key} này chạy ổn nha, mình test rồi không lỗi.`, time: '2 phút trước' },
-        { name: 'Mai An', text: 'Tải nhanh, cài xong vào game mượt luôn, cảm ơn admin nha.', time: '11 phút trước' },
-        { name: 'Phúc Gamer', text: 'Mong admin reup thêm mấy bản khác cùng dòng này nữa.', time: '26 phút trước' },
-        { name: 'Khoa Mobile', text: 'Có thumbnail với video xem trước nên dễ chọn hơn hẳn.', time: '48 phút trước' }
-      ];
+  if(!item){
+    app.innerHTML = "Không tìm thấy dữ liệu";
+    return;
+  }
 
-      return comments.map(c => {
-        const initials = c.name.split(' ').map(x => x[0]).slice(0, 2).join('').toUpperCase();
-        return `
-          <div class="comment">
-            <div class="avatar">${escapeHtml(initials)}</div>
-            <div class="comment-body">
-              <div class="comment-top">
-                <div class="comment-name">${escapeHtml(c.name)}</div>
-                <div class="comment-time">${escapeHtml(c.time)}</div>
+  // random comment theo key để tránh trùng global
+  const seed = key.charCodeAt(0);
+  const selected = pickRandom(comments, 4 + (seed % 2));
+
+  app.innerHTML = `
+  <div class="layout">
+
+    <div class="left">
+      <div class="video">
+        <iframe src="https://www.youtube.com/embed/${getYT(item.video)}"></iframe>
+      </div>
+
+      <h1>${item.title}</h1>
+
+      <div class="comments">
+        <h2>Bình luận nổi bật</h2>
+
+        ${selected.map(c=>`
+          <div class="cmt">
+            <div class="avatar">
+              ${c.avatar ? `<img src="${c.avatar}">` : maskName(c.name)[0]}
+            </div>
+
+            <div class="cmt-body">
+              <div class="cmt-top">
+                <b>${maskName(c.name)}</b>
+                <span>${c.time}</span>
               </div>
-              <div class="comment-text">${escapeHtml(c.text)}</div>
-              <div class="comment-actions">
-                <span>Thích</span>
-                <span>Phản hồi</span>
-                <span>Hữu ích</span>
+
+              <div class="cmt-text">${c.text}</div>
+
+              ${c.image ? `<img class="cmt-img" src="${c.image}">` : ""}
+
+              <div class="cmt-actions">
+                👍 ${Math.floor(Math.random()*50)}
+                💬 ${Math.floor(Math.random()*10)}
               </div>
             </div>
           </div>
-        `;
-      }).join('');
-    }
+        `).join("")}
 
-    function renderError(message) {
-      app.className = 'error';
-      app.innerHTML = escapeHtml(message);
-    }
+      </div>
+    </div>
 
-    async function init() {
-      const apiKey = getParam('api');
-      if (!apiKey) {
-        renderError('Thiếu tham số api. Vui lòng quay lại trang chủ và chọn đúng mục.');
-        return;
-      }
+    <div class="right">
+      <a href="${item.download}" target="_blank" class="btn">
+        Tải file ngay
+      </a>
+    </div>
 
-      try {
-        const res = await fetch(DATA_FILE, { cache: 'no-store' });
-        if (!res.ok) throw new Error('Không đọc được data.json');
+  </div>
+  `;
+}
 
-        const raw = await res.json();
-        const items = raw.map(normalizeItem);
-        const item = items.find(x => String(x.key) === String(apiKey));
+init();
+</script>
 
-        if (!item) {
-          renderError(`Không tìm thấy dữ liệu cho key: ${apiKey}`);
-          return;
-        }
-
-        app.className = '';
-        app.innerHTML = `
-          <div class="layout">
-            <section class="panel">
-              <div class="preview">${renderMedia(item)}</div>
-              <div class="body">
-                <h1 class="title">${escapeHtml(item.title)}</h1>
-                <p class="text">Đây là trang tải file riêng cho mục này. Mình đã giữ style đồng bộ với index để nhìn liền mạch và gọn hơn.</p>
-                <div class="row">
-                  <span class="pill">Key: ${escapeHtml(item.key)}</span>
-                  <span class="pill">Danh mục: ${escapeHtml(item.category)}</span>
-                </div>
-
-                <div class="section">
-                  <h2 class="section-title">Bình luận nổi bật</h2>
-                  <div class="comments">
-                    ${fakeComments(item)}
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <aside class="panel">
-              <div class="body">
-                <h2 class="section-title" style="font-size:24px; margin-bottom:8px;">Tải file mod</h2>
-                <p class="text">Bấm nút dưới đây để mở link tải file đã khai báo trong JSON.</p>
-                <a class="download-btn" href="${escapeHtml(item.download)}" target="_blank" rel="noopener noreferrer">Tải file ngay</a>
-                <a class="secondary-btn" href="${escapeHtml(item.video || '#')}" target="_blank" rel="noopener noreferrer">Mở video gốc</a>
-                <div class="info-box"><b>Link video:</b><br>${escapeHtml(item.video || 'Không có')}</div>
-                <div class="info-box"><b>Link tải:</b><br>${escapeHtml(item.download)}</div>
-                <div class="info-box"><b>Lưu ý:</b><br>Đây là phần bình luận mô phỏng để trang nhìn tự nhiên và đầy đặn hơn. Khi cần mình có thể đổi sang dữ liệu bình luận lấy từ file JSON riêng.</div>
-              </div>
-            </aside>
-          </div>
-        `;
-      } catch (err) {
-        renderError(err.message || 'Đã xảy ra lỗi.');
-      }
-    }
-
-    init();
-  </script>
 </body>
 </html>
