@@ -3,880 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PminMod | Kho mod</title>
+  <title>PminMod | Download</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --sidebar-w: 220px;
-      --sidebar-collapsed: 74px;
-      --bg-dark: #090212;
-      --panel: rgba(20, 7, 28, 0.74);
-      --panel-2: rgba(18, 9, 30, 0.86);
-      --card: rgba(20, 8, 34, 0.84);
-      --card-hover: rgba(28, 10, 44, 0.94);
-      --text: #f7effa;
-      --muted: #d0b9d8;
-      --line: rgba(255,255,255,0.09);
-      --pink: #ff5db1;
-      --pink-2: #ff8ec8;
-      --shadow: 0 20px 60px rgba(0,0,0,0.38);
-      --glow: 0 0 0 1px rgba(255, 93, 177, 0.16), 0 0 24px rgba(255, 93, 177, 0.18), 0 16px 40px rgba(0,0,0,0.28);
-    }
-
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;
-      color: var(--text);
-      background: var(--bg-dark);
-      overflow-x: hidden;
-    }
-
-    body { position: relative; }
-
-    .bg-video {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -3;
-      opacity: 0.34;
-      pointer-events: none;
-      filter: saturate(1.12) brightness(0.92);
-    }
-
-    .bg-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at top left, rgba(255, 105, 180, 0.24), transparent 30%),
-        radial-gradient(circle at top right, rgba(255, 0, 150, 0.18), transparent 24%),
-        linear-gradient(180deg, rgba(20, 0, 20, 0.70) 0%, rgba(10, 0, 15, 0.84) 50%, rgba(5, 0, 10, 0.94) 100%);
-    }
-
-    .grid-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.016) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.016) 1px, transparent 1px);
-      background-size: 30px 30px;
-      mask-image: linear-gradient(to bottom, rgba(255,255,255,0.28), transparent 85%);
-    }
-
-    .app {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    .sidebar {
-      position: fixed;
-      inset: 0 auto 0 0;
-      width: var(--sidebar-w);
-      padding: 14px 12px;
-      background: rgba(21, 8, 31, 0.70);
-      border-right: 1px solid var(--line);
-      backdrop-filter: blur(14px);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      transition: width .22s ease, transform .22s ease;
-      z-index: 20;
-    }
-
-    .sidebar.collapsed {
-      width: var(--sidebar-collapsed);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 4px 4px 8px;
-      min-height: 56px;
-    }
-
-    .logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      color: #2a0419;
-      font-weight: 900;
-      background: linear-gradient(135deg, var(--pink), var(--pink-2));
-      box-shadow: var(--shadow);
-      flex-shrink: 0;
-    }
-
-    .brand-text {
-      min-width: 0;
-      transition: opacity .18s ease;
-    }
-
-    .brand-text h1 {
-      margin: 0;
-      font-size: 18px;
-      line-height: 1.15;
-    }
-
-    .brand-text p {
-      margin: 4px 0 0;
-      font-size: 12px;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .sidebar.collapsed .brand-text,
-    .sidebar.collapsed .nav-label,
-    .sidebar.collapsed .sidebar-bottom span,
-    .sidebar.collapsed .section-title,
-    .sidebar.collapsed .sidebar-top-actions .mode-wrap,
-    .sidebar.collapsed .sidebar-bottom strong {
-      opacity: 0;
-      width: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .sidebar-top-actions {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 0 2px;
-    }
-
-    .toggle-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .mode-wrap {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .mode-select {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      background: rgba(28, 10, 38, 0.76);
-      color: var(--text);
-      outline: none;
-      font-size: 13px;
-    }
-
-    .section-title {
-      padding: 0 8px;
-      font-size: 12px;
-      font-weight: 800;
-      color: #d7b2c9;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-top: 2px;
-    }
-
-    .nav {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .nav-link {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-height: 40px;
-      padding: 9px 11px;
-      border-radius: 14px;
-      border: 1px solid transparent;
-      background: rgba(255,255,255,0.035);
-      color: var(--text);
-      cursor: pointer;
-      transition: .18s ease;
-      text-align: left;
-      width: 100%;
-    }
-
-    .nav-item:hover,
-    .nav-item.active {
-      background: rgba(255, 93, 177, 0.14);
-      border-color: rgba(255, 93, 177, 0.22);
-      transform: translateX(1px);
-      box-shadow: 0 0 0 1px rgba(255, 93, 177, 0.12), 0 0 18px rgba(255, 93, 177, 0.14);
-    }
-
-    .nav-icon {
-      width: 20px;
-      height: 20px;
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-      color: #ffafd8;
-      overflow: hidden;
-      border-radius: 6px;
-    }
-
-    .nav-icon svg,
-    .nav-icon img {
-      width: 20px;
-      height: 20px;
-      display: block;
-      object-fit: contain;
-      stroke: currentColor;
-    }
-
-    .nav-label {
-      font-size: 14px;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .sidebar-bottom {
-      margin-top: auto;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--line);
-    }
-
-    .sidebar-bottom strong {
-      display: block;
-      font-size: 13px;
-    }
-
-    .sidebar-bottom span {
-      display: block;
-      margin-top: 2px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.45;
-    }
-
-    .main {
-      flex: 1;
-      margin-left: var(--sidebar-w);
-      padding: 12px 12px 24px;
-      transition: margin-left .22s ease;
-    }
-
-    .sidebar.collapsed + .main {
-      margin-left: var(--sidebar-collapsed);
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .search-box {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-      padding: 10px 12px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow);
-    }
-
-    .search-box input {
-      flex: 1;
-      min-width: 0;
-      border: 0;
-      outline: none;
-      background: transparent;
-      color: var(--text);
-      font-size: 14px;
-    }
-
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .stat-pill {
-      padding: 8px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      color: var(--muted);
-      font-size: 13px;
-      white-space: nowrap;
-      backdrop-filter: blur(12px);
-    }
-
-    .hero {
-      border-radius: 24px;
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(25, 8, 34, 0.72), rgba(11, 4, 17, 0.80));
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow);
-      padding: 16px;
-      margin-bottom: 12px;
-    }
-
-    .hero h2 {
-      margin: 0;
-      font-size: clamp(22px, 3.2vw, 36px);
-      line-height: 1.04;
-      letter-spacing: -0.04em;
-    }
-
-    .hero p {
-      margin: 10px 0 0;
-      color: var(--muted);
-      max-width: 760px;
-      line-height: 1.7;
-      font-size: 14px;
-    }
-
-    .toolbar-inline {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .toolbar-inline .left,
-    .toolbar-inline .right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .chip {
-      padding: 8px 11px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.04);
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: .18s ease;
-    }
-
-    .chip:hover,
-    .chip.active {
-      background: rgba(255, 93, 177, 0.14);
-      border-color: rgba(255, 93, 177, 0.22);
-      box-shadow: 0 0 16px rgba(255, 93, 177, 0.14);
-    }
-
-    .category-text {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-    }
-
-    .card {
-      border-radius: 20px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, var(--card) 0%, rgba(10, 4, 16, 0.96) 100%);
-      box-shadow: var(--shadow);
-      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease;
-      text-decoration: none;
-      color: inherit;
-      display: block;
-      position: relative;
-      isolation: isolate;
-    }
-
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: -1px;
-      border-radius: inherit;
-      background: linear-gradient(135deg, rgba(255, 93, 177, 0.28), rgba(255, 142, 200, 0.06), rgba(255, 93, 177, 0.2));
-      opacity: 0;
-      transition: opacity .2s ease;
-      z-index: -1;
-    }
-
-    .card:hover {
-      transform: translateY(-4px) scale(1.01);
-      border-color: rgba(255, 93, 177, 0.28);
-      background: linear-gradient(180deg, var(--card-hover) 0%, rgba(15, 5, 22, 0.98) 100%);
-      box-shadow: var(--glow);
-    }
-
-    .card:hover::before {
-      opacity: 1;
-    }
-
-    .media {
-      position: relative;
-      aspect-ratio: 16 / 9;
-      background: #000;
-      overflow: hidden;
-    }
-
-    .media img,
-    .media iframe,
-    .media video {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover;
-      border: 0;
-    }
-
-    .badge,
-    .cat-badge {
-      position: absolute;
-      top: 12px;
-      z-index: 2;
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .badge {
-      left: 12px;
-      background: rgba(16, 3, 14, 0.55);
-      border: 1px solid rgba(255,255,255,0.10);
-    }
-
-    .cat-badge {
-      right: 12px;
-      color: #2a0419;
-      background: linear-gradient(135deg, var(--pink), var(--pink-2));
-    }
-
-    .play-icon {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      font-size: 54px;
-      color: rgba(255,255,255,0.95);
-      text-shadow: 0 6px 18px rgba(0,0,0,0.45);
-      pointer-events: none;
-    }
-
-    .content {
-      padding: 13px;
-    }
-
-    .title {
-      margin: 0 0 8px;
-      font-size: 16px;
-      line-height: 1.4;
-    }
-
-    .desc {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.58;
-      font-size: 14px;
-    }
-
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .pill {
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      border: 1px solid rgba(255,255,255,0.06);
-      background: rgba(255,255,255,0.05);
-    }
-
-    .message {
-      padding: 16px 18px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: var(--panel-2);
-      color: var(--muted);
-      box-shadow: var(--shadow);
-    }
-
-    .skeleton-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-    }
-
-    .skeleton-card {
-      border-radius: 20px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(26, 10, 34, 0.86), rgba(16, 7, 22, 0.96));
-      box-shadow: var(--shadow);
-    }
-
-    .sk-media,
-    .sk-line,
-    .sk-pill {
-      position: relative;
-      overflow: hidden;
-      background: rgba(255,255,255,0.06);
-    }
-
-    .sk-media::after,
-    .sk-line::after,
-    .sk-pill::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      transform: translateX(-100%);
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-      animation: shimmer 1.4s infinite;
-    }
-
-    .sk-media { aspect-ratio: 16 / 9; }
-    .sk-body { padding: 13px; }
-    .sk-line { height: 14px; border-radius: 8px; margin-bottom: 10px; }
-    .sk-line.lg { height: 20px; width: 72%; }
-    .sk-line.md { width: 95%; }
-    .sk-line.sm { width: 62%; margin-bottom: 0; }
-    .sk-row { display: flex; gap: 8px; margin-top: 12px; }
-    .sk-pill { height: 28px; width: 78px; border-radius: 999px; }
-
-    @keyframes shimmer {
-      100% { transform: translateX(100%); }
-    }
-
-    .hidden { display: none !important; }
-
-    .modal-wrap {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-      background: rgba(9, 2, 14, 0.72);
-      backdrop-filter: blur(8px);
-      z-index: 50;
-    }
-
-    .modal-wrap.show { display: flex; }
-
-    .modal {
-      width: min(560px, 100%);
-      border-radius: 24px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(34, 10, 38, 0.98), rgba(16, 5, 20, 0.98));
-      box-shadow: var(--glow);
-    }
-
-    .modal-banner {
-      aspect-ratio: 16 / 6;
-      width: 100%;
-      background: linear-gradient(135deg, rgba(255, 93, 177, 0.32), rgba(255, 142, 200, 0.16));
-      position: relative;
-      overflow: hidden;
-    }
-
-    .modal-banner img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .modal-badge {
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: rgba(16, 3, 14, 0.55);
-      border: 1px solid rgba(255,255,255,0.10);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .modal-body { padding: 20px; }
-
-    .modal-body h3 {
-      margin: 0 0 10px;
-      font-size: 28px;
-      line-height: 1.14;
-    }
-
-    .modal-body p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 15px;
-    }
-
-    .modal-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .btn {
-      padding: 13px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .btn.primary {
-      background: linear-gradient(135deg, var(--pink), var(--pink-2));
-      color: #2a0419;
-      border-color: transparent;
-    }
-
-    .mobile-menu-btn { display: none; }
-
-    @media (max-width: 960px) {
-      .sidebar {
-        transform: translateX(-100%);
-        width: var(--sidebar-w);
-      }
-
-      .sidebar.show { transform: translateX(0); }
-      .sidebar.collapsed { width: var(--sidebar-w); }
-
-      .sidebar.collapsed .brand-text,
-      .sidebar.collapsed .nav-label,
-      .sidebar.collapsed .sidebar-bottom span,
-      .sidebar.collapsed .section-title,
-      .sidebar.collapsed .sidebar-top-actions .mode-wrap,
-      .sidebar.collapsed .sidebar-bottom strong {
-        opacity: 1;
-        width: auto;
-        overflow: visible;
-        pointer-events: auto;
-      }
-
-      .main,
-      .sidebar.collapsed + .main {
-        margin-left: 0;
-      }
-
-      .mobile-menu-btn {
-        display: inline-flex;
-        width: 42px;
-        height: 42px;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-        border: 1px solid var(--line);
-        background: var(--panel);
-        color: var(--text);
-        box-shadow: var(--shadow);
-      }
-    }
-
-    @media (max-width: 720px) {
-      .main { padding: 12px 12px 26px; }
-      .hero { padding: 16px; }
-      .hero h2 { font-size: 24px; }
-      .hero p { font-size: 14px; }
-      .modal-actions { grid-template-columns: 1fr; }
-      .toolbar-inline { flex-direction: column; align-items: stretch; }
-      .toolbar-inline .left,
-      .toolbar-inline .right { width: 100%; }
-      .search-box { padding: 10px 12px; }
-      .grid,
-      .skeleton-grid { grid-template-columns: 1fr; }
-      .card:hover { transform: translateY(-2px) scale(1.003); }
-    }
-  </style>
+  <link rel="stylesheet" href="style/download.css">
 </head>
 <body>
   <video class="bg-video" autoplay muted loop playsinline>
-    <source src="https://pminmod.site/ai_check_sub/vidpmin.mp4" type="video/mp4" />
+    <source src="https://pminmod.site/ai_check_sub/vidpmin.mp4" type="video/mp4">
   </video>
   <div class="bg-overlay"></div>
   <div class="grid-overlay"></div>
 
-  <div class="app">
-    <aside id="sidebar" class="sidebar collapsed">
-      <div class="brand">
-        <div class="logo">PM</div>
-        <div class="brand-text">
-          <h1>PminMod</h1>
-          <p>Kho mod gọn, dễ tìm, dễ tải</p>
-        </div>
-      </div>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="back" href="index.html">← Quay lại</a>
+      <div class="top-pill">Trang tải file</div>
+    </div>
 
-      <div class="sidebar-top-actions">
-        <button id="toggleSidebar" class="toggle-btn" aria-label="Thu gọn menu">☰</button>
-        <div class="mode-wrap">
-          <select id="viewMode" class="mode-select">
-            <option value="thumb">Chế độ ảnh thumb</option>
-            <option value="smart">Chế độ thông minh</option>
-            <option value="embed">Ưu tiên video</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="section-title">Danh mục</div>
-      <nav id="menu" class="nav"></nav>
-
-      <div id="extraMenuWrap">
-        <div class="section-title">Mục thêm</div>
-        <nav id="extraMenu" class="nav"></nav>
-      </div>
-
-      <div class="sidebar-bottom">
-        <div class="nav-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3v18"/><path d="M5 10h14"/><path d="M5 14h14"/>
-          </svg>
-        </div>
-        <div>
-          <strong>Thông báo</strong>
-          <span>Popup, banner và link shop chỉnh trong config.json</span>
-        </div>
-      </div>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <button id="mobileMenuBtn" class="mobile-menu-btn" type="button">☰</button>
-        <div class="search-box">
-          <span>🔎</span>
-          <input id="searchInput" type="text" placeholder="Tìm theo tiêu đề hoặc key..." />
-        </div>
-        <div class="topbar-right">
-          <div id="countText" class="stat-pill">Đang tải...</div>
-        </div>
-      </div>
-
-      <section class="hero">
-        <h2>Kho video & tải file mod</h2>
-        <p>
-          Menu bên trái giờ có thể mở rộng bằng JSON. Bạn muốn thêm mục html mới chỉ cần sửa trong
-          <b>config.json</b>, không cần sửa cứng trong code nữa.
-        </p>
-      </section>
-
-      <div class="toolbar-inline">
-        <div class="left">
-          <div id="categoryText" class="category-text">Đang lọc: tất cả</div>
-        </div>
-        <div class="right">
-          <button id="thumbQuickBtn" class="chip active" type="button">Ảnh thumb</button>
-          <button id="smartQuickBtn" class="chip" type="button">Thông minh</button>
-          <button id="videoQuickBtn" class="chip" type="button">Video</button>
-        </div>
-      </div>
-
-      <div id="loadingBox" class="skeleton-grid">
-        <div class="skeleton-card"><div class="sk-media"></div><div class="sk-body"><div class="sk-line lg"></div><div class="sk-line md"></div><div class="sk-line sm"></div><div class="sk-row"><div class="sk-pill"></div><div class="sk-pill"></div></div></div></div>
-        <div class="skeleton-card"><div class="sk-media"></div><div class="sk-body"><div class="sk-line lg"></div><div class="sk-line md"></div><div class="sk-line sm"></div><div class="sk-row"><div class="sk-pill"></div><div class="sk-pill"></div></div></div></div>
-        <div class="skeleton-card"><div class="sk-media"></div><div class="sk-body"><div class="sk-line lg"></div><div class="sk-line md"></div><div class="sk-line sm"></div><div class="sk-row"><div class="sk-pill"></div><div class="sk-pill"></div></div></div></div>
-      </div>
-
-      <div id="errorBox" class="message hidden"></div>
-      <div id="emptyBox" class="message hidden">Không có mục nào phù hợp.</div>
-      <div id="grid" class="grid hidden"></div>
-    </main>
-  </div>
-
-  <div id="noticeModal" class="modal-wrap">
-    <div class="modal">
-      <div class="modal-banner">
-        <img id="bannerImage" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop" alt="Banner TikTok Shop">
-        <div class="modal-badge">TikTok Shop</div>
-      </div>
-      <div class="modal-body">
-        <h3 id="noticeTitle">Thông báo</h3>
-        <p id="noticeMessage"></p>
-        <div class="modal-actions">
-          <button id="close20Btn" class="btn">Đóng trong 20 phút</button>
-          <button id="closeBtn" class="btn primary">Đóng</button>
-        </div>
-      </div>
+    <div id="app" class="loading-box">
+      <div class="sk sk-media"></div>
+      <div class="sk sk-line lg"></div>
+      <div class="sk sk-line md"></div>
+      <div class="sk sk-line sm"></div>
     </div>
   </div>
 
   <script>
     const DATA_FILE = 'data.json';
-    const CONFIG_FILE = 'config.json';
-    const HIDE_MINUTES = 20;
-
-    let allItems = [];
-    let currentCategory = 'all';
-    let config = { categories: [], popup: {}, extra_links: [] };
-
-    const sidebar = document.getElementById('sidebar');
-    const toggleSidebar = document.getElementById('toggleSidebar');
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const viewMode = document.getElementById('viewMode');
-    const searchInput = document.getElementById('searchInput');
-    const grid = document.getElementById('grid');
-    const loadingBox = document.getElementById('loadingBox');
-    const errorBox = document.getElementById('errorBox');
-    const emptyBox = document.getElementById('emptyBox');
-    const countText = document.getElementById('countText');
-    const categoryText = document.getElementById('categoryText');
-    const menu = document.getElementById('menu');
-    const extraMenu = document.getElementById('extraMenu');
-    const extraMenuWrap = document.getElementById('extraMenuWrap');
-    const bannerImage = document.getElementById('bannerImage');
-
-    const thumbQuickBtn = document.getElementById('thumbQuickBtn');
-    const smartQuickBtn = document.getElementById('smartQuickBtn');
-    const videoQuickBtn = document.getElementById('videoQuickBtn');
-
-    const noticeModal = document.getElementById('noticeModal');
-    const noticeTitle = document.getElementById('noticeTitle');
-    const noticeMessage = document.getElementById('noticeMessage');
-    const closeBtn = document.getElementById('closeBtn');
-    const close20Btn = document.getElementById('close20Btn');
+    const CMT_FILE = 'cmt.json';
+    const app = document.getElementById('app');
 
     function escapeHtml(str = '') {
       return String(str)
@@ -887,43 +43,8 @@
         .replace(/'/g, '&#039;');
     }
 
-    function iconHome() {
-      return `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.8V20h14V9.8"/><path d="M9 20v-6h6v6"/></svg>`;
-    }
-
-    function iconPiece() {
-      return `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h4a2 2 0 0 1 2 2v1.2a2.3 2.3 0 1 0 0 4.6V12h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-3.2a2.3 2.3 0 1 0-4.6 0H8a2 2 0 0 1-2-2v-4h-1.2a2.3 2.3 0 1 1 0-4.6H6V5a2 2 0 0 1 2-2Z"/></svg>`;
-    }
-
-    function iconBox() {
-      return `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8 4.5-8 4.5-8-4.5L12 3Z"/><path d="M4 7.5V16.5L12 21l8-4.5V7.5"/><path d="M12 12v9"/></svg>`;
-    }
-
-    function iconRecycle() {
-      return `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h4l-2-3"/><path d="m13 5 2-2"/><path d="M17 7l2 3-2 3"/><path d="M5 12l2 3h4"/><path d="m7 15-2 2"/><path d="M12 19h5l2-3"/><path d="m17 16 2 2"/></svg>`;
-    }
-
-    function iconFile() {
-      return `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>`;
-    }
-
-    function iconLink() {
-      return `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 1 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 0 1-7-7L7 11"/></svg>`;
-    }
-
-    function getCategoryIcon(cat) {
-      if (cat === 'all') return iconHome();
-      if (cat === 'mod-lẻ') return iconPiece();
-      if (cat === 'mod-pack') return iconBox();
-      return iconRecycle();
-    }
-
-    function getExtraIcon(item) {
-      if (item.icon_image) {
-        return `<img src="${escapeHtml(item.icon_image)}" alt="${escapeHtml(item.label || item.name || 'icon')}">`;
-      }
-      if (item.icon === 'link') return iconLink();
-      return iconFile();
+    function getParam(name) {
+      return new URL(window.location.href).searchParams.get(name);
     }
 
     function getYoutubeId(url = '') {
@@ -967,40 +88,71 @@
       };
     }
 
-    function currentMode() {
-      return viewMode.value || 'thumb';
+    function maskWord(word = '') {
+      if (word.length <= 2) return word[0] + '*';
+      if (word.length <= 4) return word.slice(0, 1) + '***';
+      return word.slice(0, 2) + '***' + word.slice(-2);
     }
 
-    function shouldUseThumbnail(item) {
-      const mode = currentMode();
-      if (mode === 'thumb') return true;
-      if (mode === 'embed') return false;
-      if (item.thumbnail) return true;
+    function maskName(name = 'User') {
+      const parts = name.trim().split(/\s+/);
+      return parts.map(maskWord).join(' ');
+    }
 
-      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      if (!conn) return false;
-      return conn.saveData || ['slow-2g', '2g', '3g'].includes(conn.effectiveType);
+    function getInitials(name = 'U') {
+      return name
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(x => x[0]?.toUpperCase() || '')
+        .join('') || 'U';
+    }
+
+    function seededHash(str = '') {
+      let h = 0;
+      for (let i = 0; i < str.length; i++) {
+        h = (h * 31 + str.charCodeAt(i)) >>> 0;
+      }
+      return h;
+    }
+
+    function mulberry32(a) {
+      return function() {
+        let t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function shuffleSeeded(array, seed) {
+      const arr = [...array];
+      const rand = mulberry32(seed || 1);
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(rand() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function formatTimeAgo(minOffset = 1) {
+      if (minOffset < 60) return `${minOffset} phút trước`;
+      const h = Math.floor(minOffset / 60);
+      if (h < 24) return `${h} giờ trước`;
+      const d = Math.floor(h / 24);
+      return `${d} ngày trước`;
     }
 
     function renderMedia(item) {
       const ytId = getYoutubeId(item.video);
       const videoUrl = normalizeGithubVideo(item.video || '');
-      const useThumb = shouldUseThumbnail(item);
-
-      if (item.thumbnail && useThumb) {
-        return `<img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.title)}" loading="lazy"><div class="play-icon">▶</div>`;
-      }
 
       if (ytId) {
-        if (useThumb) {
-          return `<img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="${escapeHtml(item.title)}" loading="lazy"><div class="play-icon">▶</div>`;
-        }
-
         return `
+          <div class="badge">YouTube</div>
           <iframe
-            src="https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&rel=0&playsinline=1"
+            src="https://www.youtube.com/embed/${ytId}?rel=0&playsinline=1"
             title="${escapeHtml(item.title)}"
-            loading="lazy"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen>
           </iframe>
@@ -1009,193 +161,325 @@
 
       if (isVideoFile(videoUrl)) {
         return `
-          <video controls preload="metadata" muted playsinline>
+          <div class="badge">Video</div>
+          <video controls preload="metadata" playsinline>
             <source src="${escapeHtml(videoUrl)}">
           </video>
         `;
       }
 
       if (item.thumbnail) {
-        return `<img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.title)}" loading="lazy">`;
+        return `
+          <div class="badge">Thumbnail</div>
+          <img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.title)}">
+        `;
       }
 
-      return `<div style="width:100%;height:100%;display:grid;place-items:center;color:#d0b9d8;">Không có preview</div>`;
+      return `<div class="preview-empty">Không có preview</div>`;
     }
 
-    function syncModeButtons() {
-      thumbQuickBtn.classList.toggle('active', currentMode() === 'thumb');
-      smartQuickBtn.classList.toggle('active', currentMode() === 'smart');
-      videoQuickBtn.classList.toggle('active', currentMode() === 'embed');
+    function normalizeComment(c, index = 0) {
+      return {
+        id: c.id || `cmt-${index + 1}`,
+        name: c.name || 'User ẩn danh',
+        text: c.text || '',
+        avatar: c.avatar || '',
+        image: c.image || '',
+        replies: Array.isArray(c.replies) ? c.replies : [],
+        likes: typeof c.likes === 'number' ? c.likes : Math.floor(Math.random() * 80) + 1,
+        time: c.time || ''
+      };
     }
 
-    function setMode(mode) {
-      viewMode.value = mode;
-      syncModeButtons();
-      applyFilter();
+    function renderReply(reply) {
+      const masked = maskName(reply.name);
+      const avatar = reply.avatar
+        ? `<img src="${escapeHtml(reply.avatar)}" alt="${escapeHtml(masked)}">`
+        : escapeHtml(getInitials(reply.name));
+
+      return `
+        <div class="reply">
+          <div class="avatar small">${avatar}</div>
+          <div class="comment-body">
+            <div class="comment-top">
+              <div class="comment-name">${escapeHtml(masked)}</div>
+              <div class="comment-time">${escapeHtml(reply.time)}</div>
+            </div>
+            <div class="comment-text">${escapeHtml(reply.text)}</div>
+            ${reply.image ? `<img class="comment-img" src="${escapeHtml(reply.image)}" alt="reply image">` : ''}
+            <div class="comment-actions">
+              <span>Thích</span>
+              <span>Phản hồi</span>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
-    function buildMenu() {
-      const categories = ['all', ...(config.categories || ['mod-lẻ', 'mod-pack', 'mod-reup'])];
+    function renderComment(comment) {
+      const masked = maskName(comment.name);
+      const avatar = comment.avatar
+        ? `<img src="${escapeHtml(comment.avatar)}" alt="${escapeHtml(masked)}">`
+        : escapeHtml(getInitials(comment.name));
 
-      menu.innerHTML = categories.map(cat => {
-        const label = cat === 'all' ? 'Trang chủ' : cat;
-        const active = cat === currentCategory ? 'active' : '';
-        return `
-          <button class="nav-item ${active}" data-cat="${escapeHtml(cat)}" type="button">
-            <span class="nav-icon">${getCategoryIcon(cat)}</span>
-            <span class="nav-label">${escapeHtml(label)}</span>
-          </button>
-        `;
-      }).join('');
+      return `
+        <div class="comment-card" data-comment-id="${escapeHtml(comment.id)}">
+          <div class="avatar">${avatar}</div>
 
-      menu.querySelectorAll('.nav-item').forEach(btn => {
-        btn.addEventListener('click', () => {
-          currentCategory = btn.dataset.cat;
-          buildMenu();
-          applyFilter();
-          if (window.innerWidth <= 960) sidebar.classList.remove('show');
-        });
+          <div class="comment-body">
+            <div class="comment-top">
+              <div class="comment-name">${escapeHtml(masked)}</div>
+              <div class="comment-time">${escapeHtml(comment.time)}</div>
+            </div>
+
+            <div class="comment-text">${escapeHtml(comment.text)}</div>
+            ${comment.image ? `<img class="comment-img" src="${escapeHtml(comment.image)}" alt="comment image">` : ''}
+
+            <div class="comment-actions">
+              <span>👍 ${comment.likes}</span>
+              <span>Phản hồi</span>
+              <span>Hữu ích</span>
+            </div>
+
+            ${comment.replies.length ? `
+              <div class="reply-list">
+                ${comment.replies.map(renderReply).join('')}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function buildCommentPool(rawComments, itemKey) {
+      const normalized = rawComments.map(normalizeComment);
+
+      const byKey = normalized.filter(c => {
+        if (!c.postKeys) return true;
+        return Array.isArray(c.postKeys) && c.postKeys.includes(itemKey);
       });
 
-      const extraLinks = config.extra_links || [];
+      const pool = byKey.length ? byKey : normalized;
+      const seed = seededHash(itemKey);
+      const shuffled = shuffleSeeded(pool, seed);
 
-      if (!extraLinks.length) {
-        extraMenuWrap.style.display = 'none';
+      return shuffled.map((c, i) => ({
+        ...c,
+        likes: c.likes ?? (10 + ((seed + i * 17) % 90)),
+        time: c.time || formatTimeAgo(2 + ((seed + i * 13) % 240)),
+        replies: (c.replies || []).map((r, idx) => ({
+          name: r.name || 'User',
+          text: r.text || '',
+          avatar: r.avatar || '',
+          image: r.image || '',
+          time: r.time || formatTimeAgo(4 + ((seed + idx * 7) % 180))
+        }))
+      }));
+    }
+
+    function createFakeRealtimeComment(seedBase, count) {
+      const names = ['An Mod', 'Huy Gamer', 'Linh Cute', 'Kha Mobile', 'Mi***na', 'Tuấn Test'];
+      const texts = [
+        'Mới tải xong, chạy ổn nha.',
+        'Ai máy yếu vẫn dùng được nhé.',
+        'Bản này đẹp thật đó admin.',
+        'Có reup thêm bản khác không ạ?',
+        'Mình vừa test, chưa thấy lỗi.',
+        'Video xem trước rõ dễ chọn thật.'
+      ];
+
+      const rand = mulberry32(seedBase + count * 99);
+      const name = names[Math.floor(rand() * names.length)];
+      const text = texts[Math.floor(rand() * texts.length)];
+
+      return {
+        id: `rt-${Date.now()}-${count}`,
+        name,
+        text,
+        avatar: '',
+        image: '',
+        likes: Math.floor(rand() * 20) + 1,
+        time: 'vừa xong',
+        replies: []
+      };
+    }
+
+    function setupCommentsUI(commentPool) {
+      const listEl = document.getElementById('commentList');
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+      const fakeForm = document.getElementById('fakeCommentForm');
+      const fakeInput = document.getElementById('fakeCommentInput');
+
+      let shown = 0;
+      const step = 4;
+      const seed = commentPool.length ? seededHash(commentPool[0].id + shown) : 1;
+
+      function renderNextBatch() {
+        const batch = commentPool.slice(shown, shown + step);
+        if (!batch.length) {
+          loadMoreBtn.classList.add('hidden');
+          return;
+        }
+
+        listEl.insertAdjacentHTML('beforeend', batch.map(renderComment).join(''));
+        shown += batch.length;
+
+        if (shown >= commentPool.length) {
+          loadMoreBtn.classList.add('hidden');
+        }
+      }
+
+      renderNextBatch();
+
+      loadMoreBtn.addEventListener('click', renderNextBatch);
+
+      fakeForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const value = fakeInput.value.trim();
+        if (!value) return;
+
+        const fake = {
+          id: `self-${Date.now()}`,
+          name: 'Người dùng mới',
+          text: value,
+          avatar: '',
+          image: '',
+          likes: 0,
+          time: 'vừa xong',
+          replies: [
+            {
+              name: 'Admin hỗ trợ',
+              text: 'Mình đã ghi nhận, bạn tải thử bản mới nhất nhé.',
+              avatar: '',
+              image: '',
+              time: '1 phút trước'
+            }
+          ]
+        };
+
+        listEl.insertAdjacentHTML('afterbegin', renderComment(fake));
+        fakeInput.value = '';
+      });
+
+      let realtimeCount = 0;
+      setInterval(() => {
+        if (realtimeCount >= 3) return;
+        realtimeCount += 1;
+        const fakeRealtime = createFakeRealtimeComment(seed, realtimeCount);
+        listEl.insertAdjacentHTML('afterbegin', renderComment(fakeRealtime));
+      }, 18000);
+
+      const sentinel = document.getElementById('commentSentinel');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting && shown < commentPool.length) {
+            renderNextBatch();
+          }
+        }, { rootMargin: '180px' });
+
+        observer.observe(sentinel);
+      }
+    }
+
+    function renderError(message) {
+      app.className = 'error-box';
+      app.innerHTML = escapeHtml(message);
+    }
+
+    async function init() {
+      const apiKey = getParam('api');
+
+      if (!apiKey) {
+        renderError('Thiếu tham số api. Vui lòng quay lại trang chủ và chọn đúng mục.');
         return;
       }
 
-      extraMenuWrap.style.display = 'block';
-
-      extraMenu.innerHTML = extraLinks.map(item => {
-        const href = item.file || item.href || '#';
-        const label = item.label || item.name || 'Mục mới';
-        const target = item.new_tab ? '_blank' : '_self';
-        return `
-          <a class="nav-link" href="${escapeHtml(href)}" target="${target}" ${target === '_blank' ? 'rel="noopener noreferrer"' : ''}>
-            <div class="nav-item">
-              <span class="nav-icon">${getExtraIcon(item)}</span>
-              <span class="nav-label">${escapeHtml(label)}</span>
-            </div>
-          </a>
-        `;
-      }).join('');
-    }
-
-    function applyFilter() {
-      const keyword = searchInput.value.trim().toLowerCase();
-      const filtered = allItems.filter(item => {
-        const okCategory = currentCategory === 'all' || item.category === currentCategory;
-        const okSearch = item.title.toLowerCase().includes(keyword) || item.key.toLowerCase().includes(keyword);
-        return okCategory && okSearch;
-      });
-
-      loadingBox.classList.add('hidden');
-      errorBox.classList.add('hidden');
-
-      if (!filtered.length) {
-        grid.classList.add('hidden');
-        emptyBox.classList.remove('hidden');
-      } else {
-        emptyBox.classList.add('hidden');
-        grid.classList.remove('hidden');
-        grid.innerHTML = filtered.map(item => {
-          const badge = getYoutubeId(item.video) ? 'YouTube' : item.thumbnail ? 'Thumbnail' : 'Preview';
-          return `
-            <a class="card" href="download.html?api=${encodeURIComponent(item.key)}">
-              <div class="media">
-                <div class="badge">${escapeHtml(badge)}</div>
-                <div class="cat-badge">${escapeHtml(item.category)}</div>
-                ${renderMedia(item)}
-              </div>
-              <div class="content">
-                <h3 class="title">${escapeHtml(item.title)}</h3>
-                <p class="desc">Bấm để mở trang tải mod riêng cho mục này.</p>
-                <div class="row">
-                  <span class="pill">Key: ${escapeHtml(item.key)}</span>
-                  <span class="pill">Có link tải</span>
-                </div>
-              </div>
-            </a>
-          `;
-        }).join('');
-      }
-
-      countText.textContent = `${filtered.length} mục`;
-      categoryText.textContent = `Đang lọc: ${currentCategory === 'all' ? 'tất cả' : currentCategory}`;
-    }
-
-    function shouldShowNotice() {
-      const hideUntil = localStorage.getItem('notice_hide_until');
-      if (!hideUntil) return true;
-      return Date.now() > Number(hideUntil);
-    }
-
-    function openNotice() {
-      if (!config.popup || !config.popup.enabled) return;
-      if (!shouldShowNotice()) return;
-      noticeTitle.textContent = config.popup.title || 'Thông báo';
-      noticeMessage.textContent = config.popup.message || '';
-      bannerImage.src = config.popup.banner_image || bannerImage.src;
-      bannerImage.alt = config.popup.title || 'Banner TikTok Shop';
-      noticeModal.classList.add('show');
-    }
-
-    toggleSidebar.addEventListener('click', () => {
-      if (window.innerWidth <= 960) sidebar.classList.toggle('show');
-      else sidebar.classList.toggle('collapsed');
-    });
-
-    mobileMenuBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('show');
-    });
-
-    viewMode.addEventListener('change', () => {
-      syncModeButtons();
-      applyFilter();
-    });
-
-    searchInput.addEventListener('input', applyFilter);
-    thumbQuickBtn.addEventListener('click', () => setMode('thumb'));
-    smartQuickBtn.addEventListener('click', () => setMode('smart'));
-    videoQuickBtn.addEventListener('click', () => setMode('embed'));
-
-    closeBtn.addEventListener('click', () => {
-      noticeModal.classList.remove('show');
-      if (config.popup && config.popup.tiktokshop_link) {
-        window.open(config.popup.tiktokshop_link, '_blank', 'noopener');
-      }
-    });
-
-    close20Btn.addEventListener('click', () => {
-      const hideUntil = Date.now() + HIDE_MINUTES * 60 * 1000;
-      localStorage.setItem('notice_hide_until', String(hideUntil));
-      noticeModal.classList.remove('show');
-    });
-
-    async function init() {
       try {
-        const [configRes, dataRes] = await Promise.all([
-          fetch(CONFIG_FILE, { cache: 'no-store' }),
-          fetch(DATA_FILE, { cache: 'no-store' })
+        const [dataRes, cmtRes] = await Promise.all([
+          fetch(DATA_FILE, { cache: 'no-store' }),
+          fetch(CMT_FILE, { cache: 'no-store' })
         ]);
 
-        if (!configRes.ok) throw new Error('Không đọc được config.json');
         if (!dataRes.ok) throw new Error('Không đọc được data.json');
+        if (!cmtRes.ok) throw new Error('Không đọc được cmt.json');
 
-        config = await configRes.json();
         const rawData = await dataRes.json();
-        allItems = rawData.map(normalizeItem);
+        const rawComments = await cmtRes.json();
 
-        viewMode.value = 'thumb';
-        buildMenu();
-        syncModeButtons();
-        applyFilter();
-        openNotice();
+        const items = rawData.map(normalizeItem);
+        const item = items.find(x => String(x.key) === String(apiKey));
+
+        if (!item) {
+          renderError(`Không tìm thấy dữ liệu cho key: ${apiKey}`);
+          return;
+        }
+
+        const commentPool = buildCommentPool(rawComments, item.key);
+
+        app.className = '';
+        app.innerHTML = `
+          <div class="layout">
+            <section class="panel">
+              <div class="preview">${renderMedia(item)}</div>
+
+              <div class="body">
+                <h1 class="title">${escapeHtml(item.title)}</h1>
+                <p class="text">Đây là trang tải file riêng cho mục này. Bên dưới là khu bình luận mô phỏng kiểu mạng xã hội để trang nhìn tự nhiên hơn.</p>
+
+                <div class="row">
+                  <span class="pill">Key: ${escapeHtml(item.key)}</span>
+                  <span class="pill">Danh mục: ${escapeHtml(item.category)}</span>
+                </div>
+
+                <div class="section">
+                  <h2 class="section-title">Tham gia bình luận</h2>
+
+                  <form id="fakeCommentForm" class="fake-login-box">
+                    <div class="fake-user">
+                      <div class="avatar gradient">U</div>
+                      <div>
+                        <div class="fake-user-name">Tài khoản khách</div>
+                        <div class="fake-user-sub">Đăng nhập mô phỏng để bình luận</div>
+                      </div>
+                    </div>
+
+                    <textarea id="fakeCommentInput" class="fake-textarea" placeholder="Viết bình luận của bạn..."></textarea>
+
+                    <div class="fake-actions">
+                      <button type="button" class="ghost-btn">Đăng nhập giả</button>
+                      <button type="submit" class="submit-btn">Gửi bình luận</button>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="section">
+                  <h2 class="section-title">Bình luận nổi bật</h2>
+                  <div id="commentList" class="comments"></div>
+                  <div id="commentSentinel"></div>
+                  <button id="loadMoreBtn" class="load-more-btn" type="button">Xem thêm bình luận</button>
+                </div>
+              </div>
+            </section>
+
+            <aside class="panel">
+              <div class="body">
+                <h2 class="section-title side-title">Tải file mod</h2>
+                <p class="text">Bấm nút dưới đây để mở link tải file đã khai báo trong JSON.</p>
+
+                <a class="download-btn" href="${escapeHtml(item.download)}" target="_blank" rel="noopener noreferrer">Tải file ngay</a>
+                <a class="secondary-btn" href="${escapeHtml(item.video || '#')}" target="_blank" rel="noopener noreferrer">Mở video gốc</a>
+
+                <div class="info-box"><b>Link video:</b><br>${escapeHtml(item.video || 'Không có')}</div>
+                <div class="info-box"><b>Link tải:</b><br>${escapeHtml(item.download)}</div>
+                <div class="info-box"><b>Ghi chú:</b><br>Khu bình luận đang lấy từ <code>cmt.json</code>, có random theo từng key để hạn chế trùng lặp quá nhiều giữa các bài.</div>
+              </div>
+            </aside>
+          </div>
+        `;
+
+        setupCommentsUI(commentPool);
       } catch (err) {
-        loadingBox.classList.add('hidden');
-        errorBox.classList.remove('hidden');
-        errorBox.textContent = err.message || 'Đã xảy ra lỗi khi tải dữ liệu.';
-        countText.textContent = 'Lỗi';
+        renderError(err.message || 'Đã xảy ra lỗi.');
       }
     }
 
