@@ -19,10 +19,8 @@
       --line: rgba(255,255,255,0.09);
       --pink: #ff5db1;
       --pink-2: #ff8ec8;
-      --pink-3: #ff3f9d;
       --shadow: 0 20px 60px rgba(0,0,0,0.38);
       --glow: 0 0 0 1px rgba(255, 93, 177, 0.16), 0 0 24px rgba(255, 93, 177, 0.18), 0 16px 40px rgba(0,0,0,0.28);
-      --radius: 22px;
     }
 
     * { box-sizing: border-box; }
@@ -93,7 +91,9 @@
       z-index: 20;
     }
 
-    .sidebar.collapsed { width: var(--sidebar-collapsed); }
+    .sidebar.collapsed {
+      width: var(--sidebar-collapsed);
+    }
 
     .brand {
       display: flex;
@@ -199,6 +199,11 @@
       gap: 8px;
     }
 
+    .nav-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
     .nav-item {
       display: flex;
       align-items: center;
@@ -212,6 +217,7 @@
       cursor: pointer;
       transition: .18s ease;
       text-align: left;
+      width: 100%;
     }
 
     .nav-item:hover,
@@ -229,11 +235,16 @@
       place-items: center;
       flex-shrink: 0;
       color: #ffafd8;
+      overflow: hidden;
+      border-radius: 6px;
     }
 
-    .nav-icon svg {
+    .nav-icon svg,
+    .nav-icon img {
       width: 20px;
       height: 20px;
+      display: block;
+      object-fit: contain;
       stroke: currentColor;
     }
 
@@ -276,7 +287,9 @@
       transition: margin-left .22s ease;
     }
 
-    .sidebar.collapsed + .main { margin-left: var(--sidebar-collapsed); }
+    .sidebar.collapsed + .main {
+      margin-left: var(--sidebar-collapsed);
+    }
 
     .topbar {
       display: flex;
@@ -292,7 +305,7 @@
       align-items: center;
       gap: 10px;
       min-width: 0;
-      padding: 11px 14px;
+      padding: 10px 12px;
       border-radius: 16px;
       border: 1px solid var(--line);
       background: var(--panel);
@@ -317,7 +330,7 @@
     }
 
     .stat-pill {
-      padding: 10px 14px;
+      padding: 8px 12px;
       border-radius: 14px;
       border: 1px solid var(--line);
       background: var(--panel);
@@ -349,7 +362,7 @@
       color: var(--muted);
       max-width: 760px;
       line-height: 1.7;
-      font-size: 15px;
+      font-size: 14px;
     }
 
     .toolbar-inline {
@@ -370,7 +383,7 @@
     }
 
     .chip {
-      padding: 9px 13px;
+      padding: 8px 11px;
       border-radius: 999px;
       border: 1px solid var(--line);
       background: rgba(255,255,255,0.04);
@@ -388,7 +401,6 @@
       box-shadow: 0 0 16px rgba(255, 93, 177, 0.14);
     }
 
-    .count-text,
     .category-text {
       color: var(--muted);
       font-size: 13px;
@@ -432,7 +444,9 @@
       box-shadow: var(--glow);
     }
 
-    .card:hover::before { opacity: 1; }
+    .card:hover::before {
+      opacity: 1;
+    }
 
     .media {
       position: relative;
@@ -485,7 +499,9 @@
       pointer-events: none;
     }
 
-    .content { padding: 15px; }
+    .content {
+      padding: 13px;
+    }
 
     .title {
       margin: 0 0 8px;
@@ -558,7 +574,7 @@
     }
 
     .sk-media { aspect-ratio: 16 / 9; }
-    .sk-body { padding: 15px; }
+    .sk-body { padding: 13px; }
     .sk-line { height: 14px; border-radius: 8px; margin-bottom: 10px; }
     .sk-line.lg { height: 20px; width: 72%; }
     .sk-line.md { width: 95%; }
@@ -684,7 +700,9 @@
       }
 
       .main,
-      .sidebar.collapsed + .main { margin-left: 0; }
+      .sidebar.collapsed + .main {
+        margin-left: 0;
+      }
 
       .mobile-menu-btn {
         display: inline-flex;
@@ -701,7 +719,6 @@
     }
 
     @media (max-width: 720px) {
-      :root { --scale: 1; }
       .main { padding: 12px 12px 26px; }
       .hero { padding: 16px; }
       .hero h2 { font-size: 24px; }
@@ -748,6 +765,11 @@
       <div class="section-title">Danh mục</div>
       <nav id="menu" class="nav"></nav>
 
+      <div id="extraMenuWrap">
+        <div class="section-title">Mục thêm</div>
+        <nav id="extraMenu" class="nav"></nav>
+      </div>
+
       <div class="sidebar-bottom">
         <div class="nav-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -776,8 +798,8 @@
       <section class="hero">
         <h2>Kho video & tải file mod</h2>
         <p>
-          Mình đã nâng cấp tiếp: popup có banner TikTok Shop, card glow kiểu game, sidebar dùng icon SVG gọn hơn,
-          và có loading skeleton để lúc tải dữ liệu nhìn xịn hơn. Size tổng thể vẫn giữ gọn như hiện tại, còn trên điện thoại sẽ tự scale nhỏ xuống.
+          Menu bên trái giờ có thể mở rộng bằng JSON. Bạn muốn thêm mục html mới chỉ cần sửa trong
+          <b>config.json</b>, không cần sửa cứng trong code nữa.
         </p>
       </section>
 
@@ -797,6 +819,7 @@
         <div class="skeleton-card"><div class="sk-media"></div><div class="sk-body"><div class="sk-line lg"></div><div class="sk-line md"></div><div class="sk-line sm"></div><div class="sk-row"><div class="sk-pill"></div><div class="sk-pill"></div></div></div></div>
         <div class="skeleton-card"><div class="sk-media"></div><div class="sk-body"><div class="sk-line lg"></div><div class="sk-line md"></div><div class="sk-line sm"></div><div class="sk-row"><div class="sk-pill"></div><div class="sk-pill"></div></div></div></div>
       </div>
+
       <div id="errorBox" class="message hidden"></div>
       <div id="emptyBox" class="message hidden">Không có mục nào phù hợp.</div>
       <div id="grid" class="grid hidden"></div>
@@ -827,7 +850,7 @@
 
     let allItems = [];
     let currentCategory = 'all';
-    let config = { categories: [], popup: {} };
+    let config = { categories: [], popup: {}, extra_links: [] };
 
     const sidebar = document.getElementById('sidebar');
     const toggleSidebar = document.getElementById('toggleSidebar');
@@ -841,6 +864,8 @@
     const countText = document.getElementById('countText');
     const categoryText = document.getElementById('categoryText');
     const menu = document.getElementById('menu');
+    const extraMenu = document.getElementById('extraMenu');
+    const extraMenuWrap = document.getElementById('extraMenuWrap');
     const bannerImage = document.getElementById('bannerImage');
 
     const thumbQuickBtn = document.getElementById('thumbQuickBtn');
@@ -858,7 +883,7 @@
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/\"/g, '&quot;')
+        .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
     }
 
@@ -878,11 +903,27 @@
       return `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h4l-2-3"/><path d="m13 5 2-2"/><path d="M17 7l2 3-2 3"/><path d="M5 12l2 3h4"/><path d="m7 15-2 2"/><path d="M12 19h5l2-3"/><path d="m17 16 2 2"/></svg>`;
     }
 
+    function iconFile() {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>`;
+    }
+
+    function iconLink() {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 1 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 0 1-7-7L7 11"/></svg>`;
+    }
+
     function getCategoryIcon(cat) {
       if (cat === 'all') return iconHome();
       if (cat === 'mod-lẻ') return iconPiece();
       if (cat === 'mod-pack') return iconBox();
       return iconRecycle();
+    }
+
+    function getExtraIcon(item) {
+      if (item.icon_image) {
+        return `<img src="${escapeHtml(item.icon_image)}" alt="${escapeHtml(item.label || item.name || 'icon')}">`;
+      }
+      if (item.icon === 'link') return iconLink();
+      return iconFile();
     }
 
     function getYoutubeId(url = '') {
@@ -995,6 +1036,7 @@
 
     function buildMenu() {
       const categories = ['all', ...(config.categories || ['mod-lẻ', 'mod-pack', 'mod-reup'])];
+
       menu.innerHTML = categories.map(cat => {
         const label = cat === 'all' ? 'Trang chủ' : cat;
         const active = cat === currentCategory ? 'active' : '';
@@ -1014,6 +1056,29 @@
           if (window.innerWidth <= 960) sidebar.classList.remove('show');
         });
       });
+
+      const extraLinks = config.extra_links || [];
+
+      if (!extraLinks.length) {
+        extraMenuWrap.style.display = 'none';
+        return;
+      }
+
+      extraMenuWrap.style.display = 'block';
+
+      extraMenu.innerHTML = extraLinks.map(item => {
+        const href = item.file || item.href || '#';
+        const label = item.label || item.name || 'Mục mới';
+        const target = item.new_tab ? '_blank' : '_self';
+        return `
+          <a class="nav-link" href="${escapeHtml(href)}" target="${target}" ${target === '_blank' ? 'rel="noopener noreferrer"' : ''}>
+            <div class="nav-item">
+              <span class="nav-icon">${getExtraIcon(item)}</span>
+              <span class="nav-label">${escapeHtml(label)}</span>
+            </div>
+          </a>
+        `;
+      }).join('');
     }
 
     function applyFilter() {
