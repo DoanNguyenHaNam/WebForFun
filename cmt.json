@@ -1,0 +1,52 @@
+[
+  {
+    "id": "c1",
+    "name": "Hùng Mod",
+    "text": "Bản này test ổn nha, máy mình dùng bình thường không lỗi.",
+    "avatar": "",
+    "image": "",
+    "likes": 31,
+    "replies": [
+      {
+        "name": "Minh Test",
+        "text": "Mình cũng vừa cài xong, chạy mượt.",
+        "avatar": "",
+        "image": ""
+      }
+    ]
+  },
+  {
+    "id": "c2",
+    "name": "Mai An",
+    "text": "Tải nhanh, giao diện web nhìn xịn hơn hẳn rồi đó.",
+    "avatar": "",
+    "image": "",
+    "likes": 22,
+    "replies": []
+  },
+  {
+    "id": "c3",
+    "name": "Phúc Gamer",
+    "text": "Admin reup thêm mấy bản cũ nữa nha.",
+    "avatar": "",
+    "image": "",
+    "likes": 44,
+    "replies": [
+      {
+        "name": "Kha Mobile",
+        "text": "Chuẩn luôn, đang đợi thêm bản khác.",
+        "avatar": "",
+        "image": ""
+      }
+    ]
+  },
+  {
+    "id": "c4",
+    "name": "Khoa Mobile",
+    "text": "Có thumbnail với preview như này dễ chọn hơn thật.",
+    "avatar": "",
+    "image": "",
+    "likes": 16,
+    "replies": []
+  }
+]
