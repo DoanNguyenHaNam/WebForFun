@@ -1,5 +1,22 @@
 {
   "categories": ["mod-lẻ", "mod-pack", "mod-reup"],
+  "extra_links": [
+    {
+      "label": "Tin tức mod",
+      "file": "news.html",
+      "icon": "link"
+    },
+    {
+      "label": "Hướng dẫn cài",
+      "file": "guide.html",
+      "icon": "file"
+    },
+    {
+      "label": "Kho ảnh mod",
+      "file": "gallery.html",
+      "icon_image": "https://cdn-icons-png.flaticon.com/512/1375/1375106.png"
+    }
+  ],
   "popup": {
     "enabled": true,
     "title": "Ủng hộ shop giúp mình nha",
