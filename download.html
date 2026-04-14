@@ -2,129 +2,488 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PminMod | Download</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style/download.css">
 </head>
-
 <body>
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="https://pminmod.site/ai_check_sub/vidpmin.mp4" type="video/mp4">
+  </video>
+  <div class="bg-overlay"></div>
+  <div class="grid-overlay"></div>
 
-<div class="wrap">
-  <a href="index.html" class="back">← Quay lại</a>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="back" href="index.html">← Quay lại</a>
+      <div class="top-pill">Trang tải file</div>
+    </div>
 
-  <div id="app">Loading...</div>
-</div>
+    <div id="app" class="loading-box">
+      <div class="sk sk-media"></div>
+      <div class="sk sk-line lg"></div>
+      <div class="sk sk-line md"></div>
+      <div class="sk sk-line sm"></div>
+    </div>
+  </div>
 
-<script>
-const DATA = 'data.json';
-const CMT = 'cmt.json';
+  <script>
+    const DATA_FILE = 'data.json';
+    const CMT_FILE = 'cmt.json';
+    const app = document.getElementById('app');
 
-const app = document.getElementById("app");
+    function escapeHtml(str = '') {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
 
-// ====== UTILS ======
+    function getParam(name) {
+      return new URL(window.location.href).searchParams.get(name);
+    }
 
-function getParam(name){
-  return new URL(location.href).searchParams.get(name);
-}
+    function getYoutubeId(url = '') {
+      const patterns = [
+        /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+        /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+        /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+        /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
+      ];
 
-// mask tên
-function maskName(name){
-  return name.split(" ").map(w=>{
-    if(w.length <= 2) return w;
-    return w.slice(0,2) + "***";
-  }).join(" ");
-}
+      for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match) return match[1];
+      }
 
-// random không trùng
-function pickRandom(arr, count){
-  let shuffled = [...arr].sort(()=>0.5-Math.random());
-  return shuffled.slice(0, count);
-}
+      try {
+        const parsed = new URL(url);
+        return parsed.searchParams.get('v');
+      } catch {
+        return null;
+      }
+    }
 
-// lấy youtube id
-function getYT(url){
-  let match = url.match(/v=([^&]+)/);
-  return match ? match[1] : "";
-}
+    function normalizeGithubVideo(url = '') {
+      if (!url.includes('github.com') || !url.includes('/blob/')) return url;
+      return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+    }
 
-// ====== MAIN ======
+    function isVideoFile(url = '') {
+      return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
+    }
 
-async function init(){
-  const key = getParam("api");
+    function normalizeItem(item) {
+      return {
+        key: item.key || '',
+        title: item['tiêu đề'] || item.title || 'Chưa có tiêu đề',
+        category: item.category || 'mod-lẻ',
+        video: item['link video youtube'] || item.video || '',
+        download: item['link tải file'] || item.download || '#',
+        thumbnail: item.thumbnail || ''
+      };
+    }
 
-  const [dataRes, cmtRes] = await Promise.all([
-    fetch(DATA),
-    fetch(CMT)
-  ]);
+    function maskWord(word = '') {
+      if (word.length <= 2) return word[0] + '*';
+      if (word.length <= 4) return word.slice(0, 1) + '***';
+      return word.slice(0, 2) + '***' + word.slice(-2);
+    }
 
-  const data = await dataRes.json();
-  const comments = await cmtRes.json();
+    function maskName(name = 'User') {
+      const parts = name.trim().split(/\s+/);
+      return parts.map(maskWord).join(' ');
+    }
 
-  const item = data.find(x=>String(x.key) === key);
+    function getInitials(name = 'U') {
+      return name
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(x => x[0]?.toUpperCase() || '')
+        .join('') || 'U';
+    }
 
-  if(!item){
-    app.innerHTML = "Không tìm thấy dữ liệu";
-    return;
-  }
+    function seededHash(str = '') {
+      let h = 0;
+      for (let i = 0; i < str.length; i++) {
+        h = (h * 31 + str.charCodeAt(i)) >>> 0;
+      }
+      return h;
+    }
 
-  // random comment theo key để tránh trùng global
-  const seed = key.charCodeAt(0);
-  const selected = pickRandom(comments, 4 + (seed % 2));
+    function mulberry32(a) {
+      return function() {
+        let t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
 
-  app.innerHTML = `
-  <div class="layout">
+    function shuffleSeeded(array, seed) {
+      const arr = [...array];
+      const rand = mulberry32(seed || 1);
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(rand() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
 
-    <div class="left">
-      <div class="video">
-        <iframe src="https://www.youtube.com/embed/${getYT(item.video)}"></iframe>
-      </div>
+    function formatTimeAgo(minOffset = 1) {
+      if (minOffset < 60) return `${minOffset} phút trước`;
+      const h = Math.floor(minOffset / 60);
+      if (h < 24) return `${h} giờ trước`;
+      const d = Math.floor(h / 24);
+      return `${d} ngày trước`;
+    }
 
-      <h1>${item.title}</h1>
+    function renderMedia(item) {
+      const ytId = getYoutubeId(item.video);
+      const videoUrl = normalizeGithubVideo(item.video || '');
 
-      <div class="comments">
-        <h2>Bình luận nổi bật</h2>
+      if (ytId) {
+        return `
+          <div class="badge">YouTube</div>
+          <iframe
+            src="https://www.youtube.com/embed/${ytId}?rel=0&playsinline=1"
+            title="${escapeHtml(item.title)}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen>
+          </iframe>
+        `;
+      }
 
-        ${selected.map(c=>`
-          <div class="cmt">
-            <div class="avatar">
-              ${c.avatar ? `<img src="${c.avatar}">` : maskName(c.name)[0]}
+      if (isVideoFile(videoUrl)) {
+        return `
+          <div class="badge">Video</div>
+          <video controls preload="metadata" playsinline>
+            <source src="${escapeHtml(videoUrl)}">
+          </video>
+        `;
+      }
+
+      if (item.thumbnail) {
+        return `
+          <div class="badge">Thumbnail</div>
+          <img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.title)}">
+        `;
+      }
+
+      return `<div class="preview-empty">Không có preview</div>`;
+    }
+
+    function normalizeComment(c, index = 0) {
+      return {
+        id: c.id || `cmt-${index + 1}`,
+        name: c.name || 'User ẩn danh',
+        text: c.text || '',
+        avatar: c.avatar || '',
+        image: c.image || '',
+        replies: Array.isArray(c.replies) ? c.replies : [],
+        likes: typeof c.likes === 'number' ? c.likes : Math.floor(Math.random() * 80) + 1,
+        time: c.time || ''
+      };
+    }
+
+    function renderReply(reply) {
+      const masked = maskName(reply.name);
+      const avatar = reply.avatar
+        ? `<img src="${escapeHtml(reply.avatar)}" alt="${escapeHtml(masked)}">`
+        : escapeHtml(getInitials(reply.name));
+
+      return `
+        <div class="reply">
+          <div class="avatar small">${avatar}</div>
+          <div class="comment-body">
+            <div class="comment-top">
+              <div class="comment-name">${escapeHtml(masked)}</div>
+              <div class="comment-time">${escapeHtml(reply.time)}</div>
             </div>
-
-            <div class="cmt-body">
-              <div class="cmt-top">
-                <b>${maskName(c.name)}</b>
-                <span>${c.time}</span>
-              </div>
-
-              <div class="cmt-text">${c.text}</div>
-
-              ${c.image ? `<img class="cmt-img" src="${c.image}">` : ""}
-
-              <div class="cmt-actions">
-                👍 ${Math.floor(Math.random()*50)}
-                💬 ${Math.floor(Math.random()*10)}
-              </div>
+            <div class="comment-text">${escapeHtml(reply.text)}</div>
+            ${reply.image ? `<img class="comment-img" src="${escapeHtml(reply.image)}" alt="reply image">` : ''}
+            <div class="comment-actions">
+              <span>Thích</span>
+              <span>Phản hồi</span>
             </div>
           </div>
-        `).join("")}
+        </div>
+      `;
+    }
 
-      </div>
-    </div>
+    function renderComment(comment) {
+      const masked = maskName(comment.name);
+      const avatar = comment.avatar
+        ? `<img src="${escapeHtml(comment.avatar)}" alt="${escapeHtml(masked)}">`
+        : escapeHtml(getInitials(comment.name));
 
-    <div class="right">
-      <a href="${item.download}" target="_blank" class="btn">
-        Tải file ngay
-      </a>
-    </div>
+      return `
+        <div class="comment-card" data-comment-id="${escapeHtml(comment.id)}">
+          <div class="avatar">${avatar}</div>
 
-  </div>
-  `;
-}
+          <div class="comment-body">
+            <div class="comment-top">
+              <div class="comment-name">${escapeHtml(masked)}</div>
+              <div class="comment-time">${escapeHtml(comment.time)}</div>
+            </div>
 
-init();
-</script>
+            <div class="comment-text">${escapeHtml(comment.text)}</div>
+            ${comment.image ? `<img class="comment-img" src="${escapeHtml(comment.image)}" alt="comment image">` : ''}
 
+            <div class="comment-actions">
+              <span>👍 ${comment.likes}</span>
+              <span>Phản hồi</span>
+              <span>Hữu ích</span>
+            </div>
+
+            ${comment.replies.length ? `
+              <div class="reply-list">
+                ${comment.replies.map(renderReply).join('')}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function buildCommentPool(rawComments, itemKey) {
+      const normalized = rawComments.map(normalizeComment);
+
+      const byKey = normalized.filter(c => {
+        if (!c.postKeys) return true;
+        return Array.isArray(c.postKeys) && c.postKeys.includes(itemKey);
+      });
+
+      const pool = byKey.length ? byKey : normalized;
+      const seed = seededHash(itemKey);
+      const shuffled = shuffleSeeded(pool, seed);
+
+      return shuffled.map((c, i) => ({
+        ...c,
+        likes: c.likes ?? (10 + ((seed + i * 17) % 90)),
+        time: c.time || formatTimeAgo(2 + ((seed + i * 13) % 240)),
+        replies: (c.replies || []).map((r, idx) => ({
+          name: r.name || 'User',
+          text: r.text || '',
+          avatar: r.avatar || '',
+          image: r.image || '',
+          time: r.time || formatTimeAgo(4 + ((seed + idx * 7) % 180))
+        }))
+      }));
+    }
+
+    function createFakeRealtimeComment(seedBase, count) {
+      const names = ['An Mod', 'Huy Gamer', 'Linh Cute', 'Kha Mobile', 'Mi***na', 'Tuấn Test'];
+      const texts = [
+        'Mới tải xong, chạy ổn nha.',
+        'Ai máy yếu vẫn dùng được nhé.',
+        'Bản này đẹp thật đó admin.',
+        'Có reup thêm bản khác không ạ?',
+        'Mình vừa test, chưa thấy lỗi.',
+        'Video xem trước rõ dễ chọn thật.'
+      ];
+
+      const rand = mulberry32(seedBase + count * 99);
+      const name = names[Math.floor(rand() * names.length)];
+      const text = texts[Math.floor(rand() * texts.length)];
+
+      return {
+        id: `rt-${Date.now()}-${count}`,
+        name,
+        text,
+        avatar: '',
+        image: '',
+        likes: Math.floor(rand() * 20) + 1,
+        time: 'vừa xong',
+        replies: []
+      };
+    }
+
+    function setupCommentsUI(commentPool) {
+      const listEl = document.getElementById('commentList');
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+      const fakeForm = document.getElementById('fakeCommentForm');
+      const fakeInput = document.getElementById('fakeCommentInput');
+
+      let shown = 0;
+      const step = 4;
+      const seed = commentPool.length ? seededHash(commentPool[0].id + shown) : 1;
+
+      function renderNextBatch() {
+        const batch = commentPool.slice(shown, shown + step);
+        if (!batch.length) {
+          loadMoreBtn.classList.add('hidden');
+          return;
+        }
+
+        listEl.insertAdjacentHTML('beforeend', batch.map(renderComment).join(''));
+        shown += batch.length;
+
+        if (shown >= commentPool.length) {
+          loadMoreBtn.classList.add('hidden');
+        }
+      }
+
+      renderNextBatch();
+
+      loadMoreBtn.addEventListener('click', renderNextBatch);
+
+      fakeForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const value = fakeInput.value.trim();
+        if (!value) return;
+
+        const fake = {
+          id: `self-${Date.now()}`,
+          name: 'Người dùng mới',
+          text: value,
+          avatar: '',
+          image: '',
+          likes: 0,
+          time: 'vừa xong',
+          replies: [
+            {
+              name: 'Admin hỗ trợ',
+              text: 'Mình đã ghi nhận, bạn tải thử bản mới nhất nhé.',
+              avatar: '',
+              image: '',
+              time: '1 phút trước'
+            }
+          ]
+        };
+
+        listEl.insertAdjacentHTML('afterbegin', renderComment(fake));
+        fakeInput.value = '';
+      });
+
+      let realtimeCount = 0;
+      setInterval(() => {
+        if (realtimeCount >= 3) return;
+        realtimeCount += 1;
+        const fakeRealtime = createFakeRealtimeComment(seed, realtimeCount);
+        listEl.insertAdjacentHTML('afterbegin', renderComment(fakeRealtime));
+      }, 18000);
+
+      const sentinel = document.getElementById('commentSentinel');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting && shown < commentPool.length) {
+            renderNextBatch();
+          }
+        }, { rootMargin: '180px' });
+
+        observer.observe(sentinel);
+      }
+    }
+
+    function renderError(message) {
+      app.className = 'error-box';
+      app.innerHTML = escapeHtml(message);
+    }
+
+    async function init() {
+      const apiKey = getParam('api');
+
+      if (!apiKey) {
+        renderError('Thiếu tham số api. Vui lòng quay lại trang chủ và chọn đúng mục.');
+        return;
+      }
+
+      try {
+        const [dataRes, cmtRes] = await Promise.all([
+          fetch(DATA_FILE, { cache: 'no-store' }),
+          fetch(CMT_FILE, { cache: 'no-store' })
+        ]);
+
+        if (!dataRes.ok) throw new Error('Không đọc được data.json');
+        if (!cmtRes.ok) throw new Error('Không đọc được cmt.json');
+
+        const rawData = await dataRes.json();
+        const rawComments = await cmtRes.json();
+
+        const items = rawData.map(normalizeItem);
+        const item = items.find(x => String(x.key) === String(apiKey));
+
+        if (!item) {
+          renderError(`Không tìm thấy dữ liệu cho key: ${apiKey}`);
+          return;
+        }
+
+        const commentPool = buildCommentPool(rawComments, item.key);
+
+        app.className = '';
+        app.innerHTML = `
+          <div class="layout">
+            <section class="panel">
+              <div class="preview">${renderMedia(item)}</div>
+
+              <div class="body">
+                <h1 class="title">${escapeHtml(item.title)}</h1>
+                <p class="text">Đây là trang tải file riêng cho mục này. Bên dưới là khu bình luận mô phỏng kiểu mạng xã hội để trang nhìn tự nhiên hơn.</p>
+
+                <div class="row">
+                  <span class="pill">Key: ${escapeHtml(item.key)}</span>
+                  <span class="pill">Danh mục: ${escapeHtml(item.category)}</span>
+                </div>
+
+                <div class="section">
+                  <h2 class="section-title">Tham gia bình luận</h2>
+
+                  <form id="fakeCommentForm" class="fake-login-box">
+                    <div class="fake-user">
+                      <div class="avatar gradient">U</div>
+                      <div>
+                        <div class="fake-user-name">Tài khoản khách</div>
+                        <div class="fake-user-sub">Đăng nhập mô phỏng để bình luận</div>
+                      </div>
+                    </div>
+
+                    <textarea id="fakeCommentInput" class="fake-textarea" placeholder="Viết bình luận của bạn..."></textarea>
+
+                    <div class="fake-actions">
+                      <button type="button" class="ghost-btn">Đăng nhập giả</button>
+                      <button type="submit" class="submit-btn">Gửi bình luận</button>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="section">
+                  <h2 class="section-title">Bình luận nổi bật</h2>
+                  <div id="commentList" class="comments"></div>
+                  <div id="commentSentinel"></div>
+                  <button id="loadMoreBtn" class="load-more-btn" type="button">Xem thêm bình luận</button>
+                </div>
+              </div>
+            </section>
+
+            <aside class="panel">
+              <div class="body">
+                <h2 class="section-title side-title">Tải file mod</h2>
+                <p class="text">Bấm nút dưới đây để mở link tải file đã khai báo trong JSON.</p>
+
+                <a class="download-btn" href="${escapeHtml(item.download)}" target="_blank" rel="noopener noreferrer">Tải file ngay</a>
+                <a class="secondary-btn" href="${escapeHtml(item.video || '#')}" target="_blank" rel="noopener noreferrer">Mở video gốc</a>
+
+                <div class="info-box"><b>Link video:</b><br>${escapeHtml(item.video || 'Không có')}</div>
+                <div class="info-box"><b>Link tải:</b><br>${escapeHtml(item.download)}</div>
+                <div class="info-box"><b>Ghi chú:</b><br>Khu bình luận đang lấy từ <code>cmt.json</code>, có random theo từng key để hạn chế trùng lặp quá nhiều giữa các bài.</div>
+              </div>
+            </aside>
+          </div>
+        `;
+
+        setupCommentsUI(commentPool);
+      } catch (err) {
+        renderError(err.message || 'Đã xảy ra lỗi.');
+      }
+    }
+
+    init();
+  </script>
 </body>
 </html>
