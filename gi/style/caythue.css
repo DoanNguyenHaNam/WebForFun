@@ -333,6 +333,7 @@ a {
 .banner-track {
   display: flex;
   width: max-content;
+  will-change: transform;
   animation: marqueeLeft 18s linear infinite;
 }
 
@@ -392,13 +393,13 @@ a {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translateX(-100%);
   }
 }
 
 @keyframes marqueeRight {
   0% {
-    transform: translateX(-50%);
+    transform: translateX(-100%);
   }
   100% {
     transform: translateX(0);
