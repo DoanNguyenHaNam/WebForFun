@@ -2,13 +2,13 @@
   "categories": ["mod-lẻ", "mod-pack", "mod-reup"],
   "extra_links": [
     {
-      "label": "Tin tức mod",
-      "file": "news.html",
+      "label": "Chăm acc genshin impact",
+      "file": "gi/caythue.html",
       "icon": "link"
     },
     {
-      "label": "Hướng dẫn cài",
-      "file": "guide.html",
+      "label": "Ảnh nền game liên quân",
+      "file": "lq/pic.html",
       "icon": "file"
     },
     {
