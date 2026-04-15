@@ -230,7 +230,7 @@ a {
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: loopRight 12s linear infinite;
+  animation: loopLeft 12s linear infinite;
 }
 
 .banner-track span {
