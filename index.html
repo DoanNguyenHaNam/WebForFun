@@ -753,13 +753,6 @@
 
       <div class="sidebar-top-actions">
         <button id="toggleSidebar" class="toggle-btn" aria-label="Thu gọn menu">☰</button>
-        <div class="mode-wrap">
-          <select id="viewMode" class="mode-select">
-            <option value="thumb">Chế độ ảnh thumb</option>
-            <option value="smart">Chế độ thông minh</option>
-            <option value="embed">Ưu tiên video</option>
-          </select>
-        </div>
       </div>
 
       <div class="section-title">Danh mục</div>
@@ -807,11 +800,6 @@
         <div class="left">
           <div id="categoryText" class="category-text">Đang lọc: tất cả</div>
         </div>
-        <div class="right">
-          <button id="thumbQuickBtn" class="chip active" type="button">Ảnh thumb</button>
-          <button id="smartQuickBtn" class="chip" type="button">Thông minh</button>
-          <button id="videoQuickBtn" class="chip" type="button">Video</button>
-        </div>
       </div>
 
       <div id="loadingBox" class="skeleton-grid">
@@ -855,7 +843,6 @@
     const sidebar = document.getElementById('sidebar');
     const toggleSidebar = document.getElementById('toggleSidebar');
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const viewMode = document.getElementById('viewMode');
     const searchInput = document.getElementById('searchInput');
     const grid = document.getElementById('grid');
     const loadingBox = document.getElementById('loadingBox');
@@ -867,10 +854,6 @@
     const extraMenu = document.getElementById('extraMenu');
     const extraMenuWrap = document.getElementById('extraMenuWrap');
     const bannerImage = document.getElementById('bannerImage');
-
-    const thumbQuickBtn = document.getElementById('thumbQuickBtn');
-    const smartQuickBtn = document.getElementById('smartQuickBtn');
-    const videoQuickBtn = document.getElementById('videoQuickBtn');
 
     const noticeModal = document.getElementById('noticeModal');
     const noticeTitle = document.getElementById('noticeTitle');
@@ -968,7 +951,7 @@
     }
 
     function currentMode() {
-      return viewMode.value || 'thumb';
+      return 'thumb';
     }
 
     function shouldUseThumbnail(item) {
@@ -1020,18 +1003,6 @@
       }
 
       return `<div style="width:100%;height:100%;display:grid;place-items:center;color:#d0b9d8;">Không có preview</div>`;
-    }
-
-    function syncModeButtons() {
-      thumbQuickBtn.classList.toggle('active', currentMode() === 'thumb');
-      smartQuickBtn.classList.toggle('active', currentMode() === 'smart');
-      videoQuickBtn.classList.toggle('active', currentMode() === 'embed');
-    }
-
-    function setMode(mode) {
-      viewMode.value = mode;
-      syncModeButtons();
-      applyFilter();
     }
 
     function buildMenu() {
@@ -1149,15 +1120,7 @@
       sidebar.classList.toggle('show');
     });
 
-    viewMode.addEventListener('change', () => {
-      syncModeButtons();
-      applyFilter();
-    });
-
     searchInput.addEventListener('input', applyFilter);
-    thumbQuickBtn.addEventListener('click', () => setMode('thumb'));
-    smartQuickBtn.addEventListener('click', () => setMode('smart'));
-    videoQuickBtn.addEventListener('click', () => setMode('embed'));
 
     closeBtn.addEventListener('click', () => {
       noticeModal.classList.remove('show');
@@ -1186,9 +1149,7 @@
         const rawData = await dataRes.json();
         allItems = rawData.map(normalizeItem);
 
-        viewMode.value = 'thumb';
         buildMenu();
-        syncModeButtons();
         applyFilter();
         openNotice();
       } catch (err) {
