@@ -270,12 +270,12 @@ a {
   line-height: 1.6;
 }
 
-@keyframes loopRight {
+@keyframes loopLeft {
   0% {
-    transform: translateX(-50%);
+    transform: translateX(0%);
   }
   100% {
-    transform: translateX(0%);
+    transform: translateX(-50%);
   }
 }
 
