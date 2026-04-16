@@ -1,136 +1,171 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PminMod | Kho ảnh skin</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style/skin-gallery.css">
-</head>
-<body>
-
-<div class="wrap">
-  <h1>Kho ảnh skin</h1>
-
-  <div id="heroGrid"></div>
-
-  <div id="skinSection" class="hidden">
-    <button onclick="backToList()">← Quay lại</button>
-    <h2 id="heroName"></h2>
-    <div id="skinGrid"></div>
-  </div>
-</div>
-
 <script>
 const SKINS_FILE = 'skins.json';
+
+const heroGrid = document.getElementById('heroGrid');
+const skinGrid = document.getElementById('skinGrid');
+const heroCount = document.getElementById('heroCount');
+const skinTitle = document.getElementById('skinTitle');
+const skinSubtitle = document.getElementById('skinSubtitle');
+const heroSection = document.getElementById('heroSection');
+const skinSection = document.getElementById('skinSection');
+const backToHeroes = document.getElementById('backToHeroes');
+const searchInput = document.getElementById('searchInput');
 
 let skinsData = {};
 let heroNames = [];
 
-const heroGrid = document.getElementById('heroGrid');
-const skinGrid = document.getElementById('skinGrid');
-const skinSection = document.getElementById('skinSection');
-const heroNameEl = document.getElementById('heroName');
-
-/* ===== utils ===== */
-
-function slugify(name){
-  return name.toLowerCase().replace(/\s+/g,'');
+function escapeHtml(str = '') {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
-function getParam(name){
-  return new URL(location.href).searchParams.get(name);
+function getParam(name) {
+  return new URL(window.location.href).searchParams.get(name);
 }
 
-function setParam(name,value){
-  const url = new URL(location.href);
-  if(value) url.searchParams.set(name,value);
-  else url.searchParams.delete(name);
-  history.replaceState({},'',url);
+function setParam(name, value) {
+  const url = new URL(window.location.href);
+  if (!value) url.searchParams.delete(name);
+  else url.searchParams.set(name, value);
+  history.replaceState({}, '', url.toString());
 }
 
-/* ===== link logic ===== */
-
-function getHeroHeadUrl(skinId){
-  const prefix = String(skinId).slice(0,3);
-  return `https://dl.ops.kgtw.garenanow.com/CHT/HeroHeadPath/30${prefix}0head.jpg`;
+function slugifyHeroName(name) {
+  return name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '')
+    .toLowerCase();
 }
 
-function getSkinImg(skinId){
+function findHeroBySlug(slug) {
+  return heroNames.find(name => slugifyHeroName(name) === slug.toLowerCase()) || null;
+}
+
+function getHeroHeadIdFromSkinId(skinId) {
+  const prefix3 = String(skinId).slice(0, 3);
+  return `30${prefix3}0`;
+}
+
+function getHeroHeadUrlFromSkinId(skinId) {
+  const heroHeadId = getHeroHeadIdFromSkinId(skinId);
+  return `https://dl.ops.kgtw.garenanow.com/CHT/HeroHeadPath/${heroHeadId}head.jpg`;
+}
+
+function getSkinImageUrl(skinId) {
   return `https://dl.ops.kgtw.garenanow.com/CHT/HeroTrainingLoadingNew_B36/${skinId}.jpg`;
 }
 
-/* ===== render hero ===== */
+function renderHeroes(filterText = '') {
+  const q = filterText.trim().toLowerCase();
+  const filteredHeroes = heroNames.filter(name => name.toLowerCase().includes(q));
 
-function renderHeroes(){
-  heroGrid.innerHTML = heroNames.map(name=>{
-    const skins = skinsData[name];
-    const first = Object.keys(skins)[0];
+  heroCount.textContent = `${filteredHeroes.length} hero`;
+
+  heroGrid.innerHTML = filteredHeroes.map(heroName => {
+    const heroSkins = skinsData[heroName];
+    const firstSkinId = Object.keys(heroSkins)[0];
+    const headUrl = getHeroHeadUrlFromSkinId(firstSkinId);
 
     return `
-    <div class="hero-card" onclick="openHero('${name}')">
-      <img src="${getHeroHeadUrl(first)}">
-      <p>${name}</p>
-    </div>`;
+      <button class="hero-card" type="button" data-hero="${escapeHtml(heroName)}">
+        <div class="hero-thumb">
+          <img
+            src="${headUrl}"
+            alt="${escapeHtml(heroName)}"
+            loading="lazy"
+            onerror="this.src='https://via.placeholder.com/120x120?text=Hero';"
+          />
+        </div>
+        <div class="hero-card-body">
+          <strong>${escapeHtml(heroName)}</strong>
+          <span>${Object.keys(heroSkins).length} skin</span>
+        </div>
+      </button>
+    `;
   }).join('');
+
+  heroGrid.querySelectorAll('.hero-card').forEach(btn => {
+    btn.addEventListener('click', () => openHero(btn.dataset.hero));
+  });
 }
 
-/* ===== open hero ===== */
+function openHero(heroName) {
+  const heroSkins = skinsData[heroName];
+  if (!heroSkins) return;
 
-function openHero(name){
-  const skins = skinsData[name];
+  const entries = Object.entries(heroSkins);
+  const heroSlug = slugifyHeroName(heroName);
 
-  setParam('skin', slugify(name));
+  setParam('skin', heroSlug);
 
-  heroGrid.classList.add('hidden');
-  skinSection.classList.remove('hidden');
+  skinTitle.textContent = heroName;
+  skinSubtitle.textContent = `${entries.length} ảnh skin`;
 
-  heroNameEl.textContent = name;
-
-  skinGrid.innerHTML = Object.entries(skins).map(([id,skinName])=>{
+  skinGrid.innerHTML = entries.map(([skinId, skinName]) => {
+    const detailUrl = `skin-detail.html?hero=${encodeURIComponent(heroName)}&id=${encodeURIComponent(skinId)}`;
     return `
-    <a href="skin-detail.html?hero=${encodeURIComponent(name)}&id=${id}">
       <div class="skin-card">
-        <img src="${getSkinImg(id)}">
-        <p>${skinName}</p>
+        <a class="skin-image-link" href="${detailUrl}">
+          <div class="skin-image-wrap">
+            <img
+              src="${getSkinImageUrl(skinId)}"
+              alt="${escapeHtml(skinName)}"
+              loading="lazy"
+              onerror="this.src='https://via.placeholder.com/400x700?text=${encodeURIComponent(skinId)}';"
+            />
+          </div>
+        </a>
+        <div class="skin-card-body">
+          <div class="skin-id">ID: ${escapeHtml(skinId)}</div>
+          <div class="skin-name">${escapeHtml(skinName)}</div>
+        </div>
       </div>
-    </a>`;
+    `;
   }).join('');
+
+  heroSection.classList.add('hidden');
+  skinSection.classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ===== back ===== */
-
-function backToList(){
-  setParam('skin','');
+function backToHeroList() {
+  setParam('skin', '');
   skinSection.classList.add('hidden');
-  heroGrid.classList.remove('hidden');
+  heroSection.classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ===== init ===== */
+backToHeroes.addEventListener('click', backToHeroList);
 
-async function init(){
-  try{
-    const res = await fetch(SKINS_FILE);
+searchInput.addEventListener('input', () => {
+  renderHeroes(searchInput.value);
+});
+
+async function init() {
+  try {
+    const res = await fetch(SKINS_FILE, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Không đọc được skins.json');
+
     skinsData = await res.json();
-    heroNames = Object.keys(skinsData);
+    heroNames = Object.keys(skinsData).sort((a, b) => a.localeCompare(b));
 
     renderHeroes();
 
-    // auto open ?skin
-    const slug = getParam('skin');
-    if(slug){
-      const hero = heroNames.find(h=>slugify(h)===slug);
-      if(hero) openHero(hero);
+    const skinSlug = getParam('skin');
+    if (skinSlug) {
+      const matchedHero = findHeroBySlug(skinSlug);
+      if (matchedHero) openHero(matchedHero);
     }
-
-  }catch(e){
-    heroGrid.innerHTML = "❌ Lỗi load skins.json";
+  } catch (err) {
+    heroCount.textContent = 'Lỗi';
+    heroGrid.innerHTML = `<div class="error-box">${escapeHtml(err.message || 'Đã xảy ra lỗi.')}</div>`;
   }
 }
 
 init();
 </script>
-
-</body>
-</html>
