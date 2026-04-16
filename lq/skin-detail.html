@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PminMod | Ảnh skin</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style/skin-detail.css">
+</head>
+<body>
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="https://pminmod.site/ai_check_sub/vidpmin.mp4" type="video/mp4" />
+  </video>
+  <div class="bg-overlay"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="wrap">
+    <div class="topbar">
+      <a id="backBtn" href="skin-gallery.html" class="back-btn">← Quay lại kho ảnh</a>
+      <div class="top-pill">Ảnh skin</div>
+    </div>
+
+    <div id="app" class="loading-box">Đang tải...</div>
+  </div>
+
+  <script>
+    const SKINS_FILE = 'skins.json';
+    const app = document.getElementById('app');
+    const backBtn = document.getElementById('backBtn');
+
+    function escapeHtml(str = '') {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function getParam(name) {
+      return new URL(window.location.href).searchParams.get(name);
+    }
+
+    function slugifyHeroName(name) {
+      return name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9]+/g, '')
+        .toLowerCase();
+    }
+
+    function getSkinImageUrl(skinId) {
+      return `https://dl.ops.kgtw.garenanow.com/CHT/HeroTrainingLoadingNew_B36/${skinId}.jpg`;
+    }
+
+    async function init() {
+      const hero = getParam('hero');
+      const id = getParam('id');
+
+      if (!hero || !id) {
+        app.innerHTML = `<div class="error-box">Thiếu hero hoặc id.</div>`;
+        return;
+      }
+
+      backBtn.href = `skin-gallery.html?skin=${encodeURIComponent(slugifyHeroName(hero))}`;
+
+      try {
+        const res = await fetch(SKINS_FILE, { cache: 'no-store' });
+        if (!res.ok) throw new Error('Không đọc được skins.json');
+
+        const skinsData = await res.json();
+        const heroData = skinsData[hero];
+
+        if (!heroData || !heroData[id]) {
+          throw new Error('Không tìm thấy skin.');
+        }
+
+        const skinName = heroData[id];
+        const imageUrl = getSkinImageUrl(id);
+
+        app.className = '';
+        app.innerHTML = `
+          <section class="detail-card">
+            <div class="image-wrap">
+              <img
+                src="${imageUrl}"
+                alt="${escapeHtml(skinName)}"
+                loading="lazy"
+                onerror="this.src='https://via.placeholder.com/1280x720?text=${encodeURIComponent(id)}';"
+              />
+            </div>
+
+            <div class="detail-body">
+              <div class="badge-row">
+                <span class="badge">Hero: ${escapeHtml(hero)}</span>
+                <span class="badge">ID: ${escapeHtml(id)}</span>
+              </div>
+
+              <h1>${escapeHtml(skinName)}</h1>
+              <p>Trang tải ảnh riêng cho skin này. Ảnh hiển thị theo khung 16:9.</p>
+
+              <a class="download-btn" href="${imageUrl}" target="_blank" rel="noopener noreferrer" download>
+                Tải ảnh
+              </a>
+            </div>
+          </section>
+        `;
+      } catch (err) {
+        app.innerHTML = `<div class="error-box">${escapeHtml(err.message || 'Đã xảy ra lỗi.')}</div>`;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
