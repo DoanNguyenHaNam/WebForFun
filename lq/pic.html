@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PminMod | Trang mẫu</title>
+  <title>PminMod | Kho ảnh skin</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style/page-template.css">
+  <link rel="stylesheet" href="style/skin-gallery.css">
 </head>
 <body>
   <video class="bg-video" autoplay muted loop playsinline>
@@ -18,82 +18,172 @@
   <div class="wrap">
     <div class="topbar">
       <a href="index.html" class="back-btn">← Quay lại trang chủ</a>
-      <div class="top-pill">Trang phụ</div>
+      <div class="top-pill">Kho ảnh skin</div>
     </div>
 
     <section class="hero">
-      <div class="hero-text">
+      <div>
         <div class="hero-badge">PminMod</div>
-        <h1>Tiêu đề trang</h1>
+        <h1>Kho ảnh skin hero</h1>
         <p>
-          Đây là phần mô tả ngắn. Bạn chỉ cần sửa đoạn này để dùng cho các trang như hướng dẫn cài,
-          tin tức mod, thông báo, FAQ hoặc các trang giới thiệu khác.
+          Bấm vào từng hero để xem toàn bộ ảnh loading của hero đó. Ảnh đầu nhỏ lấy từ HeroHeadPath,
+          còn ảnh lớn lấy từ HeroTrainingLoadingNew_B36.
         </p>
-
-        <div class="hero-actions">
-          <a href="#" class="btn-primary">Nút chính</a>
-          <a href="#" class="btn-secondary">Nút phụ</a>
-        </div>
       </div>
-
-      <div class="hero-media">
-        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200&auto=format&fit=crop" alt="Ảnh minh họa">
-      </div>
+      <input id="searchInput" class="search-input" type="text" placeholder="Tìm theo tên hero..." />
     </section>
 
-    <div class="content-grid">
-      <main class="panel">
-        <div class="panel-header">
-          <h2>Nội dung chính</h2>
-          <span class="panel-tag">Mẫu</span>
-        </div>
+    <div id="heroSection">
+      <div class="section-head">
+        <h2>Danh sách hero</h2>
+        <span id="heroCount" class="section-tag">Đang tải...</span>
+      </div>
+      <div id="heroGrid" class="hero-grid"></div>
+    </div>
 
-        <div class="content-block">
-          <h3>Mục 1</h3>
-          <p>
-            Đây là đoạn nội dung mẫu. Bạn có thể thay bằng bài viết, hướng dẫn, thông báo hoặc bất kỳ nội dung nào.
-          </p>
+    <div id="skinSection" class="hidden">
+      <div class="section-head">
+        <div>
+          <h2 id="skinTitle">Skin hero</h2>
+          <p id="skinSubtitle" class="section-subtitle"></p>
         </div>
-
-        <div class="content-block">
-          <h3>Mục 2</h3>
-          <p>
-            Có thể chia thành nhiều block để nhìn gọn hơn. Mỗi block là một phần thông tin riêng.
-          </p>
-        </div>
-
-        <div class="content-block">
-          <h3>Mục 3</h3>
-          <ul class="list">
-            <li>Dòng nội dung thứ nhất</li>
-            <li>Dòng nội dung thứ hai</li>
-            <li>Dòng nội dung thứ ba</li>
-          </ul>
-        </div>
-      </main>
-
-      <aside class="panel sidebar-panel">
-        <div class="panel-header">
-          <h2>Thông tin nhanh</h2>
-          <span class="panel-tag">Info</span>
-        </div>
-
-        <div class="mini-card">
-          <strong>Tiêu đề nhỏ</strong>
-          <p>Mô tả ngắn để hiển thị thêm thông tin phụ.</p>
-        </div>
-
-        <div class="mini-card">
-          <strong>Link nhanh</strong>
-          <p><a href="#">Đi tới mục nào đó</a></p>
-        </div>
-
-        <div class="mini-card">
-          <strong>Ghi chú</strong>
-          <p>Bạn có thể dùng khung này để ghi chú, update hoặc cảnh báo.</p>
-        </div>
-      </aside>
+        <button id="backToHeroes" class="ghost-btn" type="button">← Quay lại hero</button>
+      </div>
+      <div id="skinGrid" class="skin-grid"></div>
     </div>
   </div>
+
+  <script>
+    const SKINS_FILE = 'skins.json';
+    const heroGrid = document.getElementById('heroGrid');
+    const skinGrid = document.getElementById('skinGrid');
+    const heroCount = document.getElementById('heroCount');
+    const skinTitle = document.getElementById('skinTitle');
+    const skinSubtitle = document.getElementById('skinSubtitle');
+    const heroSection = document.getElementById('heroSection');
+    const skinSection = document.getElementById('skinSection');
+    const backToHeroes = document.getElementById('backToHeroes');
+    const searchInput = document.getElementById('searchInput');
+
+    let skinsData = {};
+    let heroNames = [];
+
+    function escapeHtml(str = '') {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function getHeroHeadIdFromSkinId(skinId) {
+	  const prefix3 = String(skinId).slice(0, 3);
+	  return `30${prefix3}0`;
+	}
+
+    function getHeroHeadUrlFromSkinId(skinId) {
+	  const heroHeadId = getHeroHeadIdFromSkinId(skinId);
+	  return `https://dl.ops.kgtw.garenanow.com/CHT/HeroHeadPath/${heroHeadId}head.jpg`;
+	}
+
+	function getSkinImageUrl(skinId) {
+	  return `https://dl.ops.kgtw.garenanow.com/CHT/HeroTrainingLoadingNew_B36/${skinId}.jpg`;
+	}
+
+    function renderHeroes(filterText = '') {
+      const q = filterText.trim().toLowerCase();
+      const filteredHeroes = heroNames.filter(name => name.toLowerCase().includes(q));
+
+      heroCount.textContent = `${filteredHeroes.length} hero`;
+
+      heroGrid.innerHTML = filteredHeroes.map(heroName => {
+        const heroSkins = skinsData[heroName];
+        const firstSkinId = Object.keys(heroSkins)[0];
+        const headUrl = getHeroHeadUrlFromSkinId(firstSkinId);
+
+        return `
+          <button class="hero-card" type="button" data-hero="${escapeHtml(heroName)}">
+            <div class="hero-thumb">
+              <img
+                src="${headUrl}"
+                alt="${escapeHtml(heroName)}"
+                loading="lazy"
+                onerror="this.src='https://via.placeholder.com/120x120?text=Hero';"
+              />
+            </div>
+            <div class="hero-card-body">
+              <strong>${escapeHtml(heroName)}</strong>
+              <span>${Object.keys(heroSkins).length} skin</span>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      heroGrid.querySelectorAll('.hero-card').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openHero(btn.dataset.hero);
+        });
+      });
+    }
+
+    function openHero(heroName) {
+      const heroSkins = skinsData[heroName];
+      const entries = Object.entries(heroSkins);
+
+      skinTitle.textContent = heroName;
+      skinSubtitle.textContent = `${entries.length} ảnh skin`;
+
+      skinGrid.innerHTML = entries.map(([skinId, skinName]) => {
+        return `
+          <div class="skin-card">
+            <div class="skin-image-wrap">
+              <img
+                src="${getSkinImageUrl(skinId)}"
+                alt="${escapeHtml(skinName)}"
+                loading="lazy"
+                onerror="this.src='https://via.placeholder.com/400x700?text=${encodeURIComponent(skinId)}';"
+              />
+            </div>
+            <div class="skin-card-body">
+              <div class="skin-id">ID: ${escapeHtml(skinId)}</div>
+              <div class="skin-name">${escapeHtml(skinName)}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      heroSection.classList.add('hidden');
+      skinSection.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    backToHeroes.addEventListener('click', () => {
+      skinSection.classList.add('hidden');
+      heroSection.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    searchInput.addEventListener('input', () => {
+      renderHeroes(searchInput.value);
+    });
+
+    async function init() {
+      try {
+        const res = await fetch(SKINS_FILE, { cache: 'no-store' });
+        if (!res.ok) throw new Error('Không đọc được skins.json');
+
+        skinsData = await res.json();
+        heroNames = Object.keys(skinsData).sort((a, b) => a.localeCompare(b));
+
+        renderHeroes();
+      } catch (err) {
+        heroCount.textContent = 'Lỗi';
+        heroGrid.innerHTML = `<div class="error-box">${escapeHtml(err.message || 'Đã xảy ra lỗi.')}</div>`;
+      }
+    }
+
+    init();
+  </script>
 </body>
 </html>
