@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PminMod | Gallery</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style/src-gallery.css">
+</head>
+<body>
+    <video class="bg-video" autoplay muted loop playsinline>
+        <source src="https://pminmod.site/ai_check_sub/vidpmin.mp4" type="video/mp4" />
+    </video>
+    <div class="bg-overlay"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="app">
+        <main class="main">
+            <div class="topbar">
+                <button id="backBtn" class="back-btn" type="button">← Trang chủ</button>
+                <div class="topbar-right">
+                    <div id="countText" class="stat-pill">Đang tải...</div>
+                </div>
+            </div>
+
+            <section class="hero" id="heroBox">
+                <h2>Kho ảnh</h2>
+                <p>
+                    Gallery ảnh riêng theo đúng vibe của index. Bấm vào ảnh để mở trang chi tiết và tải file với tên tự tạo.
+                </p>
+            </section>
+
+            <div id="galleryPage">
+                <div class="toolbar-inline">
+                    <div class="left">
+                        <div class="category-text">Ảnh trong <b>images.json</b></div>
+                    </div>
+                </div>
+
+                <div id="grid" class="grid"></div>
+            </div>
+
+            <div id="detailPage" class="hidden">
+                <div class="toolbar-inline">
+                    <div class="left">
+                        <div id="detailMeta" class="category-text">Chi tiết ảnh</div>
+                    </div>
+                </div>
+
+                <section class="detail-card">
+                    <div class="detail-media">
+                        <img id="img" alt="Ảnh chi tiết" />
+                    </div>
+
+                    <div class="detail-content">
+                        <h3 id="name" class="detail-title"></h3>
+                        <p class="detail-desc">Ảnh hiển thị theo tỉ lệ 16:9. Bấm nút dưới để tải trực tiếp về máy.</p>
+
+                        <div class="row">
+                            <button id="downloadBtn" class="btn primary" type="button">⬇ Tải ảnh</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="errorBox" class="message hidden"></div>
+        </main>
+    </div>
+
+    <script>
+        const IMAGE_DIR = 'src/';
+        const JSON_FILE = 'images.json';
+
+        let images = [];
+
+        const galleryPage = document.getElementById('galleryPage');
+        const detailPage = document.getElementById('detailPage');
+        const gridEl = document.getElementById('grid');
+        const imgEl = document.getElementById('img');
+        const nameEl = document.getElementById('name');
+        const detailMeta = document.getElementById('detailMeta');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const backBtn = document.getElementById('backBtn');
+        const countText = document.getElementById('countText');
+        const errorBox = document.getElementById('errorBox');
+        const heroBox = document.getElementById('heroBox');
+
+        function getParam(name) {
+            return new URL(window.location.href).searchParams.get(name);
+        }
+
+        function setParam(name, value) {
+            const url = new URL(window.location.href);
+            if (value) url.searchParams.set(name, value);
+            else url.searchParams.delete(name);
+            history.pushState({}, '', url);
+        }
+
+        function escapeHtml(str = '') {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        async function loadImages() {
+            const res = await fetch(JSON_FILE, { cache: 'no-store' });
+            if (!res.ok) throw new Error('Không đọc được images.json');
+            images = await res.json();
+            if (!Array.isArray(images)) {
+                throw new Error('images.json phải là một mảng tên file ảnh');
+            }
+        }
+
+        function updateCount() {
+            countText.textContent = `${images.length} ảnh`;
+        }
+
+        function updateBackButton() {
+            const img = getParam('img');
+            backBtn.textContent = img ? '← Quay lại gallery' : '← Trang chủ';
+        }
+
+        function renderGallery() {
+            gridEl.innerHTML = images.map(file => `
+            <a class="card" href="?img=${encodeURIComponent(file)}" data-file="${encodeURIComponent(file)}">
+              <div class="media">
+                <div class="badge">Ảnh</div>
+                <img src="${IMAGE_DIR}${encodeURIComponent(file)}" alt="${escapeHtml(file)}" loading="lazy">
+              </div>
+              <div class="content">
+                <h3 class="title">${escapeHtml(file)}</h3>
+                <p class="desc">Bấm để mở trang tải ảnh riêng cho mục này.</p>
+                <div class="row">
+                  <span class="pill">16:9</span>
+                  <span class="pill">Có tải file</span>
+                </div>
+              </div>
+            </a>
+          `).join('');
+
+            gridEl.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const file = decodeURIComponent(card.dataset.file);
+                    openDetail(file);
+                });
+            });
+        }
+
+        function openDetail(file) {
+            setParam('img', file);
+
+            heroBox.classList.add('hidden');
+            galleryPage.classList.add('hidden');
+            detailPage.classList.remove('hidden');
+
+            nameEl.textContent = file;
+            detailMeta.textContent = `Chi tiết: ${file}`;
+            imgEl.src = IMAGE_DIR + encodeURIComponent(file);
+            imgEl.alt = file;
+
+            downloadBtn.onclick = () => {
+                downloadImage(IMAGE_DIR + encodeURIComponent(file), file, downloadBtn);
+            };
+
+            updateBackButton();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openGallery() {
+            setParam('img', '');
+
+            detailPage.classList.add('hidden');
+            galleryPage.classList.remove('hidden');
+            heroBox.classList.remove('hidden');
+
+            updateBackButton();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function downloadImage(url, name, btn) {
+            const old = btn.innerText;
+
+            try {
+                btn.disabled = true;
+                btn.innerText = 'Đang tải...';
+
+                const res = await fetch(url);
+                if (!res.ok) throw new Error();
+
+                const blob = await res.blob();
+                const objUrl = URL.createObjectURL(blob);
+
+                let ext = 'jpg';
+                const cleanName = name.split('?')[0];
+                const parts = cleanName.split('.');
+                if (parts.length > 1) {
+                    ext = parts.pop().toLowerCase();
+                }
+
+                const now = new Date();
+                const date =
+                    now.getFullYear() + '-' +
+                    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(now.getDate()).padStart(2, '0');
+
+                const random = Math.random().toString(36).substring(2, 7).toUpperCase();
+                const fileName = `pminmod-${date}-${random}.${ext}`;
+
+                const a = document.createElement('a');
+                a.href = objUrl;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+
+                URL.revokeObjectURL(objUrl);
+                btn.innerText = '✔ Đã tải';
+            } catch (err) {
+                console.error(err);
+                btn.innerText = '⚠ Lỗi tải';
+            }
+
+            setTimeout(() => {
+                btn.innerText = old;
+                btn.disabled = false;
+            }, 1500);
+        }
+
+        function handleBack() {
+            const img = getParam('img');
+            if (img) {
+                openGallery();
+            } else {
+                window.location.href = '../index.html';
+            }
+        }
+
+        async function init() {
+            try {
+                await loadImages();
+                updateCount();
+
+                const file = getParam('img');
+                if (file && images.includes(file)) {
+                    openDetail(file);
+                } else {
+                    renderGallery();
+                    openGallery();
+                }
+
+                backBtn.onclick = handleBack;
+            } catch (err) {
+                console.error(err);
+                errorBox.classList.remove('hidden');
+                errorBox.textContent = err.message || 'Đã xảy ra lỗi.';
+                heroBox.classList.add('hidden');
+                galleryPage.classList.add('hidden');
+                detailPage.classList.add('hidden');
+                countText.textContent = 'Lỗi';
+            }
+        }
+
+        window.addEventListener('popstate', () => {
+            const file = getParam('img');
+            if (file && images.includes(file)) {
+                openDetail(file);
+            } else {
+                openGallery();
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>

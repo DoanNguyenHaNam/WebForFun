@@ -1,117 +1,355 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PminMod | Ảnh skin</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PminMod | Ảnh skin</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style/skin-detail.css">
-</head>
-<body>
-  <video class="bg-video" autoplay muted loop playsinline>
-    <source src="https://pminmod.site/ai_check_sub/vidpmin.mp4" type="video/mp4" />
-  </video>
-  <div class="bg-overlay"></div>
-  <div class="grid-overlay"></div>
-
-  <div class="wrap">
-    <div class="topbar">
-      <a id="backBtn" href="skin-gallery.html" class="back-btn">← Quay lại kho ảnh</a>
-      <div class="top-pill">Ảnh skin</div>
-    </div>
-
-    <div id="app" class="loading-box">Đang tải...</div>
-  </div>
-
-  <script>
-    const SKINS_FILE = 'skins.json';
-    const app = document.getElementById('app');
-    const backBtn = document.getElementById('backBtn');
-
-    function escapeHtml(str = '') {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    function getParam(name) {
-      return new URL(window.location.href).searchParams.get(name);
-    }
-
-    function slugifyHeroName(name) {
-      return name
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-zA-Z0-9]+/g, '')
-        .toLowerCase();
-    }
-
-    function getSkinImageUrl(skinId) {
-      return `https://dl.ops.kgtw.garenanow.com/CHT/HeroTrainingLoadingNew_B36/${skinId}.jpg`;
-    }
-
-    async function init() {
-      const hero = getParam('hero');
-      const id = getParam('id');
-
-      if (!hero || !id) {
-        app.innerHTML = `<div class="error-box">Thiếu hero hoặc id.</div>`;
-        return;
-      }
-
-      backBtn.href = `skin-gallery.html?skin=${encodeURIComponent(slugifyHeroName(hero))}`;
-
-      try {
-        const res = await fetch(SKINS_FILE, { cache: 'no-store' });
-        if (!res.ok) throw new Error('Không đọc được skins.json');
-
-        const skinsData = await res.json();
-        const heroData = skinsData[hero];
-
-        if (!heroData || !heroData[id]) {
-          throw new Error('Không tìm thấy skin.');
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #090212;
+            --panel: rgba(20, 7, 28, 0.74);
+            --panel-2: rgba(18, 9, 30, 0.86);
+            --text: #f7effa;
+            --muted: #d0b9d8;
+            --line: rgba(255,255,255,0.09);
+            --pink: #ff5db1;
+            --pink-2: #ff8ec8;
+            --shadow: 0 20px 60px rgba(0,0,0,0.38);
+            --glow: 0 0 0 1px rgba(255, 93, 177, 0.16), 0 0 24px rgba(255, 93, 177, 0.18), 0 16px 40px rgba(0,0,0,0.28);
         }
 
-        const skinName = heroData[id];
-        const imageUrl = getSkinImageUrl(id);
+        * {
+            box-sizing: border-box;
+        }
 
-        app.className = '';
-        app.innerHTML = `
-          <section class="detail-card">
-            <div class="image-wrap">
-              <img
-                src="${imageUrl}"
-                alt="${escapeHtml(skinName)}"
-                loading="lazy"
-                onerror="this.src='https://via.placeholder.com/1280x720?text=${encodeURIComponent(id)}';"
-              />
-            </div>
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            font-family: 'Be Vietnam Pro', Arial, Helvetica, sans-serif;
+            color: var(--text);
+            background: var(--bg-dark);
+            overflow-x: hidden;
+        }
 
-            <div class="detail-body">
-              <div class="badge-row">
-                <span class="badge">Hero: ${escapeHtml(hero)}</span>
-                <span class="badge">ID: ${escapeHtml(id)}</span>
+        body {
+            position: relative;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .bg-video {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -3;
+            opacity: 0.34;
+            pointer-events: none;
+            filter: saturate(1.12) brightness(0.92);
+        }
+
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            background: radial-gradient(circle at top left, rgba(255, 105, 180, 0.24), transparent 30%), radial-gradient(circle at top right, rgba(255, 0, 150, 0.18), transparent 24%), linear-gradient(180deg, rgba(20, 0, 20, 0.70) 0%, rgba(10, 0, 15, 0.84) 50%, rgba(5, 0, 10, 0.94) 100%);
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background-image: linear-gradient(rgba(255,255,255,0.016) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.016) 1px, transparent 1px);
+            background-size: 30px 30px;
+            mask-image: linear-gradient(to bottom, rgba(255,255,255,0.28), transparent 85%);
+        }
+
+        .wrap {
+            width: min(1100px, calc(100% - 24px));
+            margin: 0 auto;
+            padding: 14px 0 28px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .back-btn,
+        .top-pill,
+        .badge {
+            padding: 10px 12px;
+            border-radius: 14px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            font-size: 14px;
+        }
+
+        .top-pill,
+        .badge {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .loading-box,
+        .error-box,
+        .detail-card {
+            border-radius: 22px;
+            border: 1px solid var(--line);
+            background: linear-gradient(180deg, rgba(25, 8, 34, 0.72), rgba(11, 4, 17, 0.80));
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+        }
+
+        .loading-box,
+        .error-box {
+            padding: 18px;
+        }
+
+        .detail-card {
+            overflow: hidden;
+        }
+
+        .image-wrap {
+            aspect-ratio: 16 / 9;
+            background: #140712;
+        }
+
+            .image-wrap img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+
+        .detail-body {
+            padding: 18px;
+        }
+
+        .badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .detail-body h1 {
+            margin: 0 0 10px;
+            font-size: clamp(28px, 4vw, 40px);
+            line-height: 1.08;
+        }
+
+        .detail-body p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--pink), var(--pink-2));
+            color: #2a0419;
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow: var(--glow);
+        }
+
+        @media (max-width: 720px) {
+            .wrap {
+                width: min(100% - 16px, 1100px);
+                padding: 10px 0 20px;
+            }
+
+            .topbar {
+                flex-wrap: wrap;
+            }
+
+            .detail-body {
+                padding: 14px;
+            }
+
+                .detail-body h1 {
+                    font-size: 24px;
+                }
+        }
+    </style>
+</head>
+<body>
+    <video class="bg-video" autoplay muted loop playsinline>
+        <source src="https://pminmod.site/ai_check_sub/vidpmin.mp4" type="video/mp4" />
+    </video>
+    <div class="bg-overlay"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="wrap">
+        <div class="topbar">
+            <a id="backBtn" href="skin-gallery.html" class="back-btn">← Quay lại kho ảnh</a>
+            <div class="top-pill">Ảnh skin</div>
+        </div>
+
+        <div id="app" class="loading-box">Đang tải...</div>
+    </div>
+
+    <script>
+        const SKINS_FILE = 'skins.json';
+        const app = document.getElementById('app');
+        const backBtn = document.getElementById('backBtn');
+
+        function escapeHtml(str = '') {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function getParam(name) {
+            return new URL(window.location.href).searchParams.get(name);
+        }
+
+        function slugifyHeroName(name) {
+            return name
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-zA-Z0-9]+/g, '')
+                .toLowerCase();
+        }
+
+        function safeFileName(str = '') {
+            return String(str)
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-zA-Z0-9-_ ]+/g, '')
+                .trim()
+                .replace(/\s+/g, '-');
+        }
+
+        function getSkinImageUrl(skinId) {
+            return `https://dl.ops.kgtw.garenanow.com/CHT/HeroTrainingLoadingNew_B36/${skinId}.jpg`;
+        }
+
+        async function downloadImage(url, filename, buttonEl) {
+            const oldText = buttonEl.textContent;
+
+            try {
+                buttonEl.disabled = true;
+                buttonEl.textContent = 'Đang tải...';
+
+                const res = await fetch(url);
+
+                if (!res.ok) throw new Error();
+
+                const blob = await res.blob();
+                const blobUrl = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+
+                URL.revokeObjectURL(blobUrl);
+
+                buttonEl.textContent = 'Đã tải';
+            } catch (err) {
+                // 🔥 fallback nếu bị chặn CORS
+                const a = document.createElement('a');
+                a.href = url;
+                a.target = '_blank';
+                a.click();
+
+                buttonEl.textContent = 'Mở ảnh...';
+            }
+
+            setTimeout(() => {
+                buttonEl.textContent = oldText;
+                buttonEl.disabled = false;
+            }, 1200);
+        }
+
+        async function init() {
+            const hero = getParam('hero');
+            const id = getParam('id');
+
+            if (!hero || !id) {
+                app.innerHTML = `<div class="error-box">Thiếu hero hoặc id.</div>`;
+                return;
+            }
+
+            backBtn.href = `skin-gallery.html?skin=${encodeURIComponent(slugifyHeroName(hero))}`;
+
+            try {
+                const res = await fetch(SKINS_FILE, { cache: 'no-store' });
+                if (!res.ok) throw new Error('Không đọc được skins.json');
+
+                const skinsData = await res.json();
+                const heroData = skinsData[hero];
+
+                if (!heroData || !heroData[id]) {
+                    throw new Error('Không tìm thấy skin.');
+                }
+
+                const skinName = heroData[id];
+                const imageUrl = getSkinImageUrl(id);
+                const fileName = `${safeFileName(hero)}-${safeFileName(skinName)}-${id}.jpg`;
+
+                app.className = '';
+                app.innerHTML = `
+            <section class="detail-card">
+              <div class="image-wrap">
+                <img
+                  src="${imageUrl}"
+                  alt="${escapeHtml(skinName)}"
+                  loading="lazy"
+                  onerror="this.src='https://via.placeholder.com/1280x720?text=${encodeURIComponent(id)}';"
+                />
               </div>
 
-              <h1>${escapeHtml(skinName)}</h1>
-              <p>Trang tải ảnh riêng cho skin này. Ảnh hiển thị theo khung 16:9.</p>
+              <div class="detail-body">
+                <div class="badge-row">
+                  <span class="badge">Hero: ${escapeHtml(hero)}</span>
+                  <span class="badge">ID: ${escapeHtml(id)}</span>
+                </div>
 
-              <a class="download-btn" href="${imageUrl}" target="_blank" rel="noopener noreferrer" download>
-                Tải ảnh
-              </a>
-            </div>
-          </section>
-        `;
-      } catch (err) {
-        app.innerHTML = `<div class="error-box">${escapeHtml(err.message || 'Đã xảy ra lỗi.')}</div>`;
-      }
-    }
+                <h1>${escapeHtml(skinName)}</h1>
+                <p>Trang tải ảnh riêng cho skin này. Ảnh hiển thị theo khung 16:9.</p>
 
-    init();
-  </script>
+                <button id="downloadBtn" class="download-btn" type="button">
+                  Tải ảnh
+                </button>
+              </div>
+            </section>
+          `;
+
+                const downloadBtn = document.getElementById('downloadBtn');
+                downloadBtn.addEventListener('click', () => {
+                    downloadImage(imageUrl, fileName, downloadBtn);
+                });
+            } catch (err) {
+                app.innerHTML = `<div class="error-box">${escapeHtml(err.message || 'Đã xảy ra lỗi.')}</div>`;
+            }
+        }
+
+        init();
+    </script>
 </body>
 </html>
