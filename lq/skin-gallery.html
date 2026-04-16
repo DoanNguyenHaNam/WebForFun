@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PminMod | Kho ảnh skin</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style/skin-gallery.css">
+</head>
+<body>
+
+<div class="wrap">
+  <h1>Kho ảnh skin</h1>
+
+  <div id="heroGrid"></div>
+
+  <div id="skinSection" class="hidden">
+    <button onclick="backToList()">← Quay lại</button>
+    <h2 id="heroName"></h2>
+    <div id="skinGrid"></div>
+  </div>
+</div>
+
+<script>
+const SKINS_FILE = 'skins.json';
+
+let skinsData = {};
+let heroNames = [];
+
+const heroGrid = document.getElementById('heroGrid');
+const skinGrid = document.getElementById('skinGrid');
+const skinSection = document.getElementById('skinSection');
+const heroNameEl = document.getElementById('heroName');
+
+/* ===== utils ===== */
+
+function slugify(name){
+  return name.toLowerCase().replace(/\s+/g,'');
+}
+
+function getParam(name){
+  return new URL(location.href).searchParams.get(name);
+}
+
+function setParam(name,value){
+  const url = new URL(location.href);
+  if(value) url.searchParams.set(name,value);
+  else url.searchParams.delete(name);
+  history.replaceState({},'',url);
+}
+
+/* ===== link logic ===== */
+
+function getHeroHeadUrl(skinId){
+  const prefix = String(skinId).slice(0,3);
+  return `https://dl.ops.kgtw.garenanow.com/CHT/HeroHeadPath/30${prefix}0head.jpg`;
+}
+
+function getSkinImg(skinId){
+  return `https://dl.ops.kgtw.garenanow.com/CHT/HeroTrainingLoadingNew_B36/${skinId}.jpg`;
+}
+
+/* ===== render hero ===== */
+
+function renderHeroes(){
+  heroGrid.innerHTML = heroNames.map(name=>{
+    const skins = skinsData[name];
+    const first = Object.keys(skins)[0];
+
+    return `
+    <div class="hero-card" onclick="openHero('${name}')">
+      <img src="${getHeroHeadUrl(first)}">
+      <p>${name}</p>
+    </div>`;
+  }).join('');
+}
+
+/* ===== open hero ===== */
+
+function openHero(name){
+  const skins = skinsData[name];
+
+  setParam('skin', slugify(name));
+
+  heroGrid.classList.add('hidden');
+  skinSection.classList.remove('hidden');
+
+  heroNameEl.textContent = name;
+
+  skinGrid.innerHTML = Object.entries(skins).map(([id,skinName])=>{
+    return `
+    <a href="skin-detail.html?hero=${encodeURIComponent(name)}&id=${id}">
+      <div class="skin-card">
+        <img src="${getSkinImg(id)}">
+        <p>${skinName}</p>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+/* ===== back ===== */
+
+function backToList(){
+  setParam('skin','');
+  skinSection.classList.add('hidden');
+  heroGrid.classList.remove('hidden');
+}
+
+/* ===== init ===== */
+
+async function init(){
+  try{
+    const res = await fetch(SKINS_FILE);
+    skinsData = await res.json();
+    heroNames = Object.keys(skinsData);
+
+    renderHeroes();
+
+    // auto open ?skin
+    const slug = getParam('skin');
+    if(slug){
+      const hero = heroNames.find(h=>slugify(h)===slug);
+      if(hero) openHero(hero);
+    }
+
+  }catch(e){
+    heroGrid.innerHTML = "❌ Lỗi load skins.json";
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
