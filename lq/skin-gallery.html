@@ -1,3 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PminMod | Kho ảnh skin</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style/skin-gallery.css">
+</head>
+<body>
+
+<div class="wrap">
+  <h1>Kho ảnh skin</h1>
+
+  <div id="heroGrid"></div>
+
+  <div id="skinSection" class="hidden">
+    <button onclick="backToList()">← Quay lại</button>
+    <h2 id="heroName"></h2>
+    <div id="skinGrid"></div>
+  </div>
+</div>
+
 <script>
 const SKINS_FILE = 'skins.json';
 
@@ -169,3 +193,6 @@ async function init() {
 
 init();
 </script>
+
+</body>
+</html>
