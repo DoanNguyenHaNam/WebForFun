@@ -283,16 +283,22 @@ a {
 
 .detail-media {
     position: relative;
-    aspect-ratio: 16 / 9;
+    min-height: 320px;
+    max-height: 85vh;
     background: #000;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
 }
 
     .detail-media img {
         width: 100%;
         height: 100%;
+        max-height: calc(85vh - 24px);
         display: block;
-        object-fit: cover;
+        object-fit: contain;
     }
 
 .detail-content {
@@ -398,4 +404,19 @@ a {
     .card:hover {
         transform: translateY(-2px) scale(1.003);
     }
+}
+.meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0 0;
+}
+
+.meta-pill {
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
 }

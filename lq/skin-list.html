@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pmin Gi | Danh sách skin</title>
+    <link rel="icon" href="../icon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style/skin-gallery.css">
+</head>
+<body>
+    <video class="bg-video" autoplay muted loop playsinline>
+        <source src="https://pminmod.site/ai_check_sub/vidpmin.mp4" type="video/mp4" />
+    </video>
+    <div class="bg-overlay"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="wrap">
+        <div class="topbar">
+            <a href="skin-gallery.html" class="back-btn">← Quay lại danh sách tướng</a>
+            <div class="top-pill">Danh sách skin</div>
+        </div>
+
+        <section class="hero">
+            <div>
+                <div class="hero-badge">PminMod</div>
+                <h1 id="heroTitle">Đang tải...</h1>
+                <p id="heroSubtitle">Vui lòng chờ một chút</p>
+            </div>
+        </section>
+
+        <div class="section-head">
+            <h2>Danh sách skin</h2>
+            <span id="skinCount" class="section-tag">Đang tải...</span>
+        </div>
+
+        <div id="skinGrid" class="skin-grid"></div>
+        <div id="emptyState" class="error-box hidden">Không tìm thấy tướng hoặc chưa có dữ liệu skin.</div>
+    </div>
+
+    <script>
+        const SKINS_FILE = 'skins.json';
+
+        const heroTitle = document.getElementById('heroTitle');
+        const heroSubtitle = document.getElementById('heroSubtitle');
+        const skinCount = document.getElementById('skinCount');
+        const skinGrid = document.getElementById('skinGrid');
+        const emptyState = document.getElementById('emptyState');
+
+        function getParam(name) {
+            return new URL(window.location.href).searchParams.get(name) || '';
+        }
+
+        function slugifyHeroName(name) {
+            return name
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd')
+                .replace(/[^a-zA-Z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .toLowerCase();
+        }
+
+        function escapeHtml(str = '') {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function getSkinImageUrl(skinId) {
+            return `https://dl.ops.kgtw.garenanow.com/CHT/HeroTrainingLoadingNew_B36/${skinId}.jpg`;
+        }
+
+        function findHeroBySlug(skinsData, slug) {
+            return Object.keys(skinsData).find(hero => slugifyHeroName(hero) === slug) || null;
+        }
+
+        async function init() {
+            try {
+                const res = await fetch(SKINS_FILE, { cache: 'no-store' });
+                if (!res.ok) throw new Error('Không đọc được skins.json');
+
+                const skinsData = await res.json();
+                const heroSlug = getParam('hero');
+                const heroName = findHeroBySlug(skinsData, heroSlug);
+
+                if (!heroSlug || !heroName || !skinsData[heroName]) {
+                    heroTitle.textContent = 'Không tìm thấy tướng';
+                    heroSubtitle.textContent = 'Kiểm tra lại tham số URL hoặc dữ liệu skins.json';
+                    skinCount.textContent = '0 skin';
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+
+                const heroSkins = skinsData[heroName];
+                const entries = Object.entries(heroSkins);
+
+                heroTitle.textContent = heroName;
+                heroSubtitle.textContent = `Tổng cộng ${entries.length} skin`;
+                skinCount.textContent = `${entries.length} skin`;
+
+                if (!entries.length) {
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+
+                skinGrid.innerHTML = entries.map(([skinId, skinName]) => {
+                    const detailUrl = `skin-detail.html?hero=${encodeURIComponent(heroName)}&id=${encodeURIComponent(skinId)}`;
+                    return `
+                        <div class="skin-card">
+                            <a class="skin-image-link" href="${detailUrl}">
+                                <div class="skin-image-wrap">
+                                    <img
+                                        src="${getSkinImageUrl(skinId)}"
+                                        alt="${escapeHtml(skinName)}"
+                                        loading="lazy"
+                                        onerror="this.src='https://via.placeholder.com/400x700?text=${encodeURIComponent(skinId)}';"
+                                    />
+                                </div>
+                            </a>
+                            <div class="skin-card-body">
+                                <div class="skin-id">ID: ${escapeHtml(skinId)}</div>
+                                <div class="skin-name">${escapeHtml(skinName)}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                heroTitle.textContent = 'Lỗi tải dữ liệu';
+                heroSubtitle.textContent = 'Không thể đọc skins.json';
+                skinCount.textContent = 'Lỗi';
+                emptyState.textContent = err.message || 'Đã xảy ra lỗi.';
+                emptyState.classList.remove('hidden');
+                console.error(err);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
