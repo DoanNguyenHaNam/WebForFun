@@ -109,5 +109,102 @@
       </aside>
     </div>
   </div>
+	<button class="qr-fab" id="qrFab" type="button" aria-label="Mở mã QR">
+		<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2">
+			<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z"></path>
+			<path d="M14 14h2v2h-2zM18 14h2v6h-6v-2"></path>
+		</svg>
+	</button>
+
+	<div class="qr-modal" id="qrModal" aria-hidden="true">
+		<div class="qr-backdrop" id="qrBackdrop"></div>
+
+		<div class="qr-panel">
+			<button class="qr-close" id="qrClose" type="button" aria-label="Đóng">✕</button>
+			<div class="qr-title">Quét để mở nhanh</div>
+			<div class="qr-sub">Mở web này trên điện thoại</div>
+
+			<div class="qr-box">
+				<canvas id="qrCanvas"></canvas>
+			</div>
+
+			<div class="qr-link" id="qrLinkText"></div>
+
+			<div class="qr-actions">
+				<button class="qr-action-btn" id="copyQrLink" type="button">Copy link</button>
+				<button class="qr-action-btn primary" id="downloadQr" type="button">Tải QR</button>
+			</div>
+		</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+	<script>
+		const qrFab = document.getElementById('qrFab');
+		const qrModal = document.getElementById('qrModal');
+		const qrBackdrop = document.getElementById('qrBackdrop');
+		const qrClose = document.getElementById('qrClose');
+		const qrCanvas = document.getElementById('qrCanvas');
+		const qrLinkText = document.getElementById('qrLinkText');
+		const copyQrLink = document.getElementById('copyQrLink');
+		const downloadQr = document.getElementById('downloadQr');
+
+		function getQrTargetUrl() {
+		return window.location.href;
+		}
+
+		async function renderQR() {
+		const url = getQrTargetUrl();
+		qrLinkText.textContent = url;
+
+		try {
+		await QRCode.toCanvas(qrCanvas, url, {
+		width: 240,
+		margin: 2,
+		color: {
+		dark: '#111111',
+		light: '#ffffff'
+		}
+		});
+		} catch (err) {
+		console.error('QR render error:', err);
+		}
+		}
+
+		function openQRModal() {
+		qrModal.classList.add('show');
+		document.body.classList.add('no-scroll');
+		renderQR();
+		}
+
+		function closeQRModal() {
+		qrModal.classList.remove('show');
+		document.body.classList.remove('no-scroll');
+		}
+
+		qrFab.addEventListener('click', openQRModal);
+		qrClose.addEventListener('click', closeQRModal);
+		qrBackdrop.addEventListener('click', closeQRModal);
+
+		copyQrLink.addEventListener('click', async () => {
+		try {
+		await navigator.clipboard.writeText(getQrTargetUrl());
+		copyQrLink.textContent = 'Đã copy';
+		setTimeout(() => copyQrLink.textContent = 'Copy link', 1200);
+		} catch {
+		alert('Không copy được link');
+		}
+		});
+		downloadQr.addEventListener('click', () => {
+		const link = document.createElement('a');
+		link.download = 'pminmod-qr.png';
+		link.href = qrCanvas.toDataURL('image/png');
+		link.click();
+		});
+
+		document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && qrModal.classList.contains('show')) {
+		closeQRModal();
+		}
+		});
+	</script>
 </body>
 </html>

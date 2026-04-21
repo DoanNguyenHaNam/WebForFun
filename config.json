@@ -1,5 +1,5 @@
 {
-  "categories": ["mod-lẻ", "mod-pack", "mod-reup"],
+  "categories": [ "mod-lẻ", "mod-pack", "mod-reup" ],
   "extra_links": [
     {
       "label": "Chăm acc genshin impact",
@@ -23,5 +23,10 @@
     "message": "Combo tản nhiệt giá siêu hời",
     "tiktokshop_link": "https://vt.tiktok.com/ZS9L5WXAgfCYM-9JAlC/",
     "banner_image": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/7761d03c79514529935563f6aafa14ed~tplv-aphluv4xwc-crop-webp:800:800.webp?dr=15592&t=555f072d&ps=933b5bde&shp=8dbd94bf&shcp=e1be8f53&idc=my2&from=2378011839"
+  },
+  "qr_button": {
+    "enabled": true,
+    "mode": "current-page",
+    "custom_link": "https://your-domain.com"
   }
 }
